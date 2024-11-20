@@ -1,18 +1,25 @@
-// See https://svelte.dev/docs/kit/types#app.d.ts
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
+
 // for information about these interfaces
+type Schema = typeof import('./lib/server/db/schema');
 declare global {
 	namespace App {
-        interface Platform {
-            env: Env
-            cf: CfProperties
-            ctx: ExecutionContext
-        }
-
-        interface Locals {
-			user: import('$lib/server/auth').SessionValidationResult['user'];
-			session: import('$lib/server/auth').SessionValidationResult['session'];
+		interface Platform {
+			env: {
+				DB: D1Database;
+				BUCKET: R2Bucket;
+			};
+			cf: CfProperties;
+			ctx: ExecutionContext;
 		}
-    }
+
+		interface Locals {
+			db: DrizzleD1Database<Schema>;
+			user: User | null;
+			session: Session | null;
+			bucket: R2Bucket;
+		}
+	}
 }
 
 export {};

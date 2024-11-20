@@ -1,12 +1,4 @@
-import { sql } from 'drizzle-orm';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-export const timestamps = {
-	updatedAt: text('updated_at').default(sql`(CURRENT_TIMESTAMP)`),
-	createdAt: text('created_at').default(sql`(CURRENT_TIMESTAMP)`)
-};
-export function array<T>() {
-	return text('', { mode: 'json' }).$type<T[]>();
-}
 
 export const user = sqliteTable('user', {
 	id: text('id').primaryKey(),

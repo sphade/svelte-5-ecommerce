@@ -8,7 +8,22 @@
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
 	import { registerModalState } from '$lib/states/modalState.svelte';
-	const form = superForm(defaults(zod(registerSchema)));
+	import { authClient } from '$lib/client';
+	const form = superForm(defaults(zod(registerSchema)), {
+		SPA: true,
+		validators: zod(registerSchema),
+		async onUpdate({ form }) {
+			if (form.valid) {
+				const { data, error } = await authClient.signUp.email({
+					email: 'test@example.com',
+					password: 'password1234',
+					name: 'test',
+					image: 'https://example.com/image.png'
+				});
+				console.log("🚀 ~ onUpdate ~ data:", data)
+			}
+		}
+	});
 
 	const { form: formData, enhance, delayed } = form;
 </script>
