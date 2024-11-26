@@ -2,7 +2,7 @@ import { dev } from '$app/environment';
 import { createAuth } from '$lib/auth.js';
 import { productSchema } from '$lib/formSchema.js';
 import { productTable } from '$lib/server/db/schema.js';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { nanoid } from 'nanoid';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -51,7 +51,7 @@ export const actions = {
 		const uploadResults = await uploadFiles(images, bucket);
 
 		const slug = name.toLowerCase().replaceAll(' ', '-') + nanoid(5);
-		const res = await db.insert(productTable).values({
+		await db.insert(productTable).values({
 			categoryId: category,
 			description,
 			images: uploadResults,
@@ -62,7 +62,6 @@ export const actions = {
 			slug,
 			adminId: session?.user.id || ''
 		});
-		console.log('🚀 ~ res ~ res:', res);
 		redirect(303, '/admin/products');
 	}
 };

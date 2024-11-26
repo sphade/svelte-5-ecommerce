@@ -1,23 +1,7 @@
 <script lang="ts">
 	import { ArrowUpIcon, ShoppingCartIcon } from 'lucide-svelte';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-
-	const data = [
-		{ name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Feb', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Apr', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'May', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Jun', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Jul', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Aug', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Sep', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Oct', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Nov', total: Math.floor(Math.random() * 5000) + 1000 },
-		{ name: 'Dec', total: Math.floor(Math.random() * 5000) + 1000 }
-	];
 </script>
 
 <div class="flex-1 space-y-4 p-8 pt-6">

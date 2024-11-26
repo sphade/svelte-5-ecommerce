@@ -40,7 +40,7 @@
 		</Table.Header>
 		<Table.Body>
 			{#each orders as order (order.id)}
-				<Table.Row key={order.id}>
+				<Table.Row>
 					<Table.Cell class="font-medium">#{order.id}</Table.Cell>
 					<Table.Cell>
 						<div class="flex items-center">

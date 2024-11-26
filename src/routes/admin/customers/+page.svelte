@@ -34,7 +34,7 @@
 		</Table.Header>
 		<Table.Body>
 			{#each customers as customer}
-				<Table.Row key={customer.id}>
+				<Table.Row>
 					<Table.Cell class="font-medium">{customer.id}</Table.Cell>
 					<Table.Cell>{customer.name}</Table.Cell>
 					<Table.Cell>{customer.email}</Table.Cell>
