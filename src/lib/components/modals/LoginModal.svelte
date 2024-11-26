@@ -10,8 +10,40 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { loginModalState, requestPasswordResetModalState } from '$lib/states/modalState.svelte';
+	import { authClient } from '$lib/client';
 
-	const form = superForm(defaults(zod(loginSchema)));
+	const form = superForm(defaults(zod(loginSchema)), {
+		SPA: true,
+		validators: zod(loginSchema),
+		async onUpdate({ form }) {
+			if (form.valid) {
+				const { email, password } = form.data;
+				const { error } = await authClient.signIn.email(
+					{
+						email,
+						password
+					},
+					{
+						onSuccess(ctx) {
+							toast.success('login successful');
+							loginModalState.setFalse();
+							if ($page.url.pathname === '/password-reset')
+								goto('/', {
+									invalidateAll: true
+								});
+						}
+					}
+				);
+				if (error) {
+					if (error.message) {
+						toast.error(error.message);
+					} else {
+						toast.error(error.statusText);
+					}
+				}
+			}
+		}
+	});
 
 	const { form: formData, enhance, delayed } = form;
 </script>

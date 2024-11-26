@@ -2,7 +2,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Table from '$lib/components/ui/table';
-
+	let { data } = $props();
+	console.log('🚀 ~ data:', data);
 	const categories = [
 		{
 			id: 1,
@@ -75,24 +76,21 @@
 			<Table.Row>
 				<Table.Head class="w-[100px]">ID</Table.Head>
 				<Table.Head>Name</Table.Head>
-				<Table.Head>Product count</Table.Head>
 				<Table.Head>number of subcategories</Table.Head>
-				<Table.Head>Status</Table.Head>
+				<Table.Head>description</Table.Head>
 
 				<Table.Head class="text-right">Actions</Table.Head>
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#each categories as category}
+			{#each data.categories as category}
 				<Table.Row>
 					<Table.Cell class="font-medium">{category.id}</Table.Cell>
 					<Table.Cell>{category.name}</Table.Cell>
-					<Table.Cell>{category.noOfProducts}</Table.Cell>
-					<Table.Cell>{category.subCategoryCount}</Table.Cell>
-					<Table.Cell>{category.status}</Table.Cell>
+					<Table.Cell>{category.subCategories.length}</Table.Cell>
+					<Table.Cell>{category.description || 'no description'}</Table.Cell>
 
 					<Table.Cell class="text-right">
-						<Button variant="outline" size="sm" class="mr-2">Edit</Button>
 						<Button variant="outline" size="sm">Delete</Button>
 					</Table.Cell>
 				</Table.Row>

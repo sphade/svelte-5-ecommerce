@@ -1,16 +1,42 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { authClient } from '$lib/client';
 	import * as Card from '$lib/components/ui/card';
 	import * as Form from '$lib/components/ui/form';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { resetPasswordSchema } from '$lib/formSchema';
+	import { loginModalState } from '$lib/states/modalState.svelte';
 	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
-	const token = $page.url.searchParams.get('token') || '';
-	const form = superForm(defaults(zod(resetPasswordSchema)));
+	const form = superForm(defaults(zod(resetPasswordSchema)), {
+		SPA: true,
+		validators: zod(resetPasswordSchema),
+		async onUpdate({ form }) {
+			if (form.valid) {
+				const { password } = form.data;
+				const { error } = await authClient.resetPassword(
+					{
+						newPassword: password
+					},
+					{
+						onSuccess(ctx) {
+							loginModalState.setTrue();
+						}
+					}
+				);
+				if (error) {
+					if (error.message) {
+						toast.error(error.message);
+					} else {
+						toast.error(error.statusText);
+					}
+				}
+			}
+		}
+	});
 
 	const { form: formData, enhance, delayed } = form;
 </script>

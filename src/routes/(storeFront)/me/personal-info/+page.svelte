@@ -39,22 +39,12 @@
 			</div>
 		</div>
 		<div class="flex flex-col gap-3">
-			{#if true}
-				<h1 class="font-display text-lg font-semibold md:text-2xl">No Name</h1>
-			{:else}
-				<h1 class="font-display text-lg font-semibold capitalize md:text-2xl">lawal adebola</h1>
-			{/if}
-			<div class="flex flex-col gap-3 md:flex-row md:gap-10">
-				<div class="flex flex-col">
-					<h2 class="text-sm font-semibold md:text-base">Email</h2>
-					<p class="text-sm font-normal md:text-base">sphade012@gmail.com</p>
-				</div>
-				<div class="flex flex-col">
-					<h2 class="text-sm font-semibold md:text-base">Phone number</h2>
-					<p class="text-sm font-normal md:text-base">
-						{'0908887776767' || 'no number'}
-					</p>
-				</div>
+			<h1 class="font-display text-lg font-semibold capitalize md:text-2xl">
+				{$page.data.user.name}
+			</h1>
+			<div class="flex flex-col">
+				<h2 class="text-sm font-semibold md:text-base">Email</h2>
+				<p class="text-sm font-normal md:text-base">{$page.data.user.email}</p>
 			</div>
 		</div>
 	</section>

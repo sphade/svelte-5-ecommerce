@@ -1,10 +1,10 @@
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 export const registerSchema = z
 	.object({
 		email: z.string().email(),
-		firstName: z.string().min(3).max(20),
-		lastName: z.string().min(3).max(20),
+		name: z.string().min(3).max(20),
 		password: z.string().min(8).max(100),
 		confirmPassword: z.string().min(8).max(100)
 	})
@@ -22,8 +22,7 @@ export const loginSchema = z.object({
 export type LoginSchema = typeof loginSchema;
 
 export const updateEmailSchema = z.object({
-	email: z.string().email(),
-	password: z.string().min(8)
+	email: z.string().email()
 });
 export const requestPasswordResetSchema = z.object({
 	email: z.string().email()
@@ -77,12 +76,30 @@ export const updateNumberSchema = z.object({
 	})
 });
 export const updateNameSchema = z.object({
-	firstName: z.string().min(3),
-	lastName: z.string().min(3)
+	name: z.string().min(3)
 });
 
 export const guestInformationSchema = z.object({
 	email: z.string().email(),
 	firstName: z.string().min(1),
 	lastName: z.string().min(1)
+});
+
+// Schema for inserting a user - can be used to validate API requests
+export const categorySchema = z.object({
+	name: z.string().min(1),
+	description: z.string(),
+	subCategories: z.string().array().min(1)
+});
+export const productSchema = z.object({
+	name: z.string().min(1),
+	description: z.string().min(3),
+	category: z.number().positive(),
+	subCategory: z.string().min(1),
+	price: z.number().positive(),
+	stock: z.number().nonnegative(),
+	images: z
+		.instanceof(File, { message: 'Please upload a file.' })
+		.refine((f) => f.size < 100_000, 'Max 100 kB upload size.')
+		.array()
 });

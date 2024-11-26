@@ -14,3 +14,7 @@ enabled = true
 binding = "DB"
 database_name = "svelte5-ecommerceDb"
 database_id = "7839da2e-8ef5-46c1-94e6-fb111d636688"
+
+[[r2_buckets]]
+binding = 'BUCKET' # <~ valid JavaScript variable name
+bucket_name = 'ecommerce-bucket'

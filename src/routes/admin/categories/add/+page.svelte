@@ -7,6 +7,10 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { X } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
+	import { superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { categorySchema } from '$lib/formSchema.js';
+	import * as Form from '$lib/components/ui/form';
 
 	const categories = [
 		{ id: 'electronics', name: 'Electronics' },
@@ -20,8 +24,13 @@
 		{ id: 'health', name: 'Health' },
 		{ id: 'automotive', name: 'Automotive' }
 	];
+	let { data } = $props();
+	const form = superForm(data.form, {
+		validators: zodClient(categorySchema),
+		dataType: 'json'
+	});
 
-	let subCategories = $state<string[]>([]);
+	const { form: formData, enhance, delayed } = form;
 	let subcategoryInput = $state('');
 
 	function handleKeydown(e: Event) {
@@ -32,8 +41,8 @@
 			const word = input.value.trim();
 			console.log('🚀 ~ handleKeydown ~ word:', word);
 
-			if (word && !subCategories.includes(word)) {
-				subCategories = [...subCategories, word];
+			if (word && !$formData.subCategories.includes(word)) {
+				$formData.subCategories = [...$formData.subCategories, word];
 				input.value = '';
 				event.preventDefault();
 			}
@@ -49,15 +58,15 @@
 			const trimmedWord = value.trim();
 			console.log('🚀 ~ handleKeydown ~ word:', trimmedWord);
 
-			if (trimmedWord && !subCategories.includes(trimmedWord)) {
-				subCategories = [...subCategories, trimmedWord];
+			if (trimmedWord && !$formData.subCategories.includes(trimmedWord)) {
+				$formData.subCategories = [...$formData.subCategories, trimmedWord];
 				subcategoryInput = '';
 			}
 		}
 	}
 
 	function removeSubcategory(index: number) {
-		subCategories = subCategories.filter((_, i) => i !== index);
+		$formData.subCategories = $formData.subCategories.filter((_, i) => i !== index);
 	}
 </script>
 
@@ -65,52 +74,66 @@
 	<div class="flex items-center justify-between space-y-2">
 		<h2 class="text-3xl font-bold tracking-tight">Add New Category</h2>
 	</div>
-	<form>
+	<form method="POST" use:enhance action="add">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Category Information</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				<div class="grid grid-cols-2 gap-4">
-					<div class="space-y-2">
-						<Label>Category Name</Label>
-						<Input id="name" name="name" required />
-					</div>
-					<div class="space-y-2">
-						<Label>Short Description</Label>
-						<Input id="sku" name="sku" required />
-					</div>
+					<Form.Field {form} name="name">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Category Name</Form.Label>
+								<Input {...props} bind:value={$formData.name} />
+							{/snippet}
+						</Form.Control>
+
+						<Form.FieldErrors />
+					</Form.Field>
+					<Form.Field {form} name="description">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Short Description</Form.Label>
+								<Input {...props} bind:value={$formData.description} />
+							{/snippet}
+						</Form.Control>
+
+						<Form.FieldErrors />
+					</Form.Field>
 				</div>
+				<Form.Field {form} name="subCategories">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Subcategories</Form.Label>
+							{#if $formData.subCategories.length > 0}
+								<div class="mb-2 flex flex-wrap gap-2">
+									{#each $formData.subCategories as subcategory, index}
+										<Badge
+											>{subcategory}
 
-				<div class="space-y-2">
-					<Label>Subcategories</Label>
+											<button
+												type="button"
+												class="ml-1.5 hover:text-red-500"
+												onclick={() => removeSubcategory(index)}
+											>
+												<X class="size-3" />
+											</button>
+										</Badge>
+									{/each}
+								</div>
+							{/if}
+							<Input
+								{...props}
+								bind:value={subcategoryInput}
+								oninput={handleSubcategoryInput}
+								placeholder="Type subcategory and press space to add"
+							/>
+						{/snippet}
+					</Form.Control>
 
-					<!-- Badges container -->
-					{#if subCategories.length > 0}
-						<div class="mb-2 flex flex-wrap gap-2">
-							{#each subCategories as subcategory, index}
-								<Badge
-									>{subcategory}
-
-									<button
-										type="button"
-										class="ml-1.5 hover:text-red-500"
-										onclick={() => removeSubcategory(index)}
-									>
-										<X class="size-3" />
-									</button>
-								</Badge>
-							{/each}
-						</div>
-					{/if}
-
-					<!-- Input for adding subcategories -->
-					<Input
-						bind:value={subcategoryInput}
-						oninput={handleSubcategoryInput}
-						placeholder="Type subcategory and press space to add"
-					/>
-				</div>
+					<Form.FieldErrors />
+				</Form.Field>
 
 				<Button type="submit">Add Category</Button>
 			</Card.Content>

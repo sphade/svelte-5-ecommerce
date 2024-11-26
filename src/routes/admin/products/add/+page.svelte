@@ -5,83 +5,170 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import * as Form from '$lib/components/ui/form';
+	import SuperDebug, { filesProxy, superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { productSchema } from '$lib/formSchema.js';
+	import { Loader2 } from 'lucide-svelte';
 
-	const categories = [
-		{ id: 'electronics', name: 'Electronics' },
-		{ id: 'clothing', name: 'Clothing' },
-		{ id: 'home-and-garden', name: 'Home & Garden' },
-		{ id: 'sports-and-outdoors', name: 'Sports & Outdoors' },
-		{ id: 'books', name: 'Books' },
-		{ id: 'beauty', name: 'Beauty' },
-		{ id: 'toys', name: 'Toys' },
-		{ id: 'food-and-beverage', name: 'Food & Beverage' },
-		{ id: 'health', name: 'Health' },
-		{ id: 'automotive', name: 'Automotive' }
-	];
+	let { data } = $props();
+	const form = superForm(data.form, {
+		validators: zodClient(productSchema),
+		validationMethod: 'auto'
+	});
+	const { form: formData, enhance, delayed, errors } = form;
+	function getSubCategories(id: number) {
+		const category = data.categories.find((cat) => cat.id === id);
+		return category?.subCategories || [];
+	}
+	const images = filesProxy(form, 'images');
+	let previews = $derived(Array.from($images).map((file) => URL.createObjectURL(file)));
+	$effect(() => {
+		console.log($errors);
+	});
 </script>
 
 <div class="flex-1 space-y-4 p-8 pt-6">
 	<div class="flex items-center justify-between space-y-2">
 		<h2 class="text-3xl font-bold tracking-tight">Add New Product</h2>
 	</div>
-	<form>
+	<!-- <SuperDebug data={$formData} /> -->
+	<form enctype="multipart/form-data" method="POST" use:enhance action="/admin/products/add">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Product Information</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-4">
+				<Form.Field {form} name="name">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Product Name</Form.Label>
+							<Input {...props} bind:value={$formData.name} />
+						{/snippet}
+					</Form.Control>
+
+					<Form.FieldErrors />
+				</Form.Field>
+				<Form.Field {form} name="description">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Description</Form.Label>
+							<Input {...props} bind:value={$formData.description} />
+						{/snippet}
+					</Form.Control>
+
+					<Form.FieldErrors />
+				</Form.Field>
+
 				<div class="grid grid-cols-2 gap-4">
-					<div class="space-y-2">
-						<Label>Product Name</Label>
-						<Input id="name" name="name" required />
-					</div>
-					<div class="space-y-2">
-						<Label>SKU</Label>
-						<Input id="sku" name="sku" required />
-					</div>
-				</div>
-				<div class="space-y-2">
-					<Label>Description</Label>
-					<Textarea id="description" name="description" required />
+					<Form.Field {form} name="price">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Price</Form.Label>
+								<Input {...props} type="number" bind:value={$formData.price} />
+							{/snippet}
+						</Form.Control>
+
+						<Form.FieldErrors />
+					</Form.Field>
+
+					<Form.Field {form} name="stock">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Stock</Form.Label>
+								<Input {...props} type="number" bind:value={$formData.stock} />
+							{/snippet}
+						</Form.Control>
+
+						<Form.FieldErrors />
+					</Form.Field>
 				</div>
 				<div class="grid grid-cols-2 gap-4">
-					<div class="space-y-2">
-						<Label>Price</Label>
-						<Input id="price" name="price" type="number" step="0.01" required />
-					</div>
-					<div class="space-y-2">
-						<Label>Stock</Label>
-						<Input id="stock" name="stock" type="number" required />
-					</div>
+					<Form.Field {form} name="category">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Category</Form.Label>
+
+								<select
+									class="block w-full rounded-md border-2 p-1.5"
+									{...props}
+									bind:value={$formData.category}
+									onchange={() => {
+										formData.update(
+											($f) => {
+												$f.subCategory = '';
+												return $f;
+											},
+											{
+												taint: true
+											}
+										);
+									}}
+								>
+									{#each data.categories as category}
+										<option value={category.id}>{category.name}</option>
+									{/each}
+								</select>
+							{/snippet}
+						</Form.Control>
+
+						<Form.FieldErrors />
+					</Form.Field>
+
+					<Form.Field {form} name="subCategory">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Sub Category</Form.Label>
+
+								<select
+									class="block w-full rounded-md border-2 p-1.5"
+									{...props}
+									bind:value={$formData.subCategory}
+								>
+									{#each getSubCategories($formData.category) as subCategory}
+										<option value={subCategory}>{subCategory}</option>
+									{/each}
+								</select>
+							{/snippet}
+						</Form.Control>
+
+						<Form.FieldErrors />
+					</Form.Field>
 				</div>
-				<div class="grid grid-cols-2 gap-4">
-					<div class="space-y-2">
-						<Label>Category</Label>
-						<!-- <Select.Root>
-							<Select.Trigger class="w-[180px]">
-								<Select.Value placeholder="Theme" />
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="light">Light</Select.Item>
-								<Select.Item value="dark">Dark</Select.Item>
-								<Select.Item value="system">System</Select.Item>
-							</Select.Content>
-						</Select.Root> -->
-					</div>
-					<div class="space-y-2">
-						<Label>Subcategory</Label>
-						<Input id="subcategory" name="subcategory" />
-					</div>
+				<Form.Field {form} name="images">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Images</Form.Label>
+							<input
+								{...props}
+								accept="image/png, image/jpeg"
+								bind:files={$images}
+								type="file"
+								multiple
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if $errors.images}
+						{#each $errors.images[0] as error}
+							<p class="text-red-600">{error}</p>
+						{/each}
+					{/if}
+
+					<Form.FieldErrors />
+				</Form.Field>
+				<div class="grid w-fit grid-cols-3 gap-2">
+					{#each previews as preview}
+						<img src={preview} alt="" class="size-20 rounded-md border-2" />
+					{/each}
 				</div>
-				<div class="space-y-2">
-					<Label>Brand</Label>
-					<Input id="brand" name="brand" />
-				</div>
-				<div class="space-y-2">
-					<Label>Tags (comma-separated)</Label>
-					<Input id="tags" name="tags" />
-				</div>
-				<Button type="submit">Add Product</Button>
+
+				<Button type="submit">
+					{#if $delayed}
+						<Loader2 class="size-6 animate-spin " />
+					{:else}
+						Add Product
+					{/if}
+				</Button>
 			</Card.Content>
 		</Card.Root>
 	</form>

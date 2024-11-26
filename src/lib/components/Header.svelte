@@ -4,6 +4,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { ChevronDown, Menu, ShoppingCart } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import { authClient } from '$lib/client';
 	import { invalidateAll } from '$app/navigation';
 
 	import {
@@ -18,6 +19,7 @@
 	import ResetPasswordModal from './modals/ResetPasswordModal.svelte';
 	import CartSheet from './modals/CartSheet.svelte';
 	import MobileAuth from './modals/MobileAuth.svelte';
+	import { page } from '$app/stores';
 
 	function getUserInitial(name: string) {
 		return name
@@ -25,6 +27,7 @@
 			.map((n) => n[0])
 			.join('');
 	}
+	// const session = authClient.useSession();
 </script>
 
 <header
@@ -38,27 +41,29 @@
 	>
 
 	<div class="flex items-center gap-2 md:gap-6">
-		{#if false}
+		{#if $page.data.user}
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<button class="flex items-center gap-3 rounded-3xl border border-border bg-muted p-1">
-						<Avatar.Root class="ring ring-primary">
-							<Avatar.Image alt="profile picture" />
-							<Avatar.Fallback class="capitalize">LA</Avatar.Fallback>
-						</Avatar.Root>
+				<DropdownMenu.Trigger
+					class="flex items-center gap-3 rounded-3xl border border-border bg-muted p-1"
+				>
+					<Avatar.Root class="ring ring-primary">
+						<Avatar.Image alt="profile picture" />
+						<Avatar.Fallback class="capitalize">
+							{getUserInitial($page.data.user.name)}
+						</Avatar.Fallback>
+					</Avatar.Root>
 
-						<ChevronDown />
-					</button>
+					<ChevronDown />
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="w-56">
 					<DropdownMenu.Label>My Account</DropdownMenu.Label>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Group>
-						<DropdownMenu.Item href="/me/personal-info">Profile</DropdownMenu.Item>
-						<DropdownMenu.Item href="/me/order-history">Order history</DropdownMenu.Item>
-						<DropdownMenu.Item href="/me/redeem-code">Redeem code</DropdownMenu.Item>
-						<DropdownMenu.Item href="/me/addresses">Addresses</DropdownMenu.Item>
-						<DropdownMenu.Item href="/me/settings">Settings</DropdownMenu.Item>
+						<DropdownMenu.Item>Profile</DropdownMenu.Item>
+						<DropdownMenu.Item>Order history</DropdownMenu.Item>
+						<DropdownMenu.Item>Redeem code</DropdownMenu.Item>
+						<DropdownMenu.Item>Addresses</DropdownMenu.Item>
+						<DropdownMenu.Item>Settings</DropdownMenu.Item>
 					</DropdownMenu.Group>
 					<DropdownMenu.Separator />
 
@@ -66,6 +71,7 @@
 
 					<DropdownMenu.Item
 						onclick={async () => {
+							await authClient.signOut();
 							invalidateAll();
 						}}>Log out</DropdownMenu.Item
 					>

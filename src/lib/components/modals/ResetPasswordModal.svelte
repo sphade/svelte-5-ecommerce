@@ -7,8 +7,40 @@
 	import { defaults, superForm } from 'sveltekit-superforms/client';
 	import { toast } from 'svelte-sonner';
 	import { zod } from 'sveltekit-superforms/adapters';
-	import { requestPasswordResetModalState } from '$lib/states/modalState.svelte';
-	const form = superForm(defaults(zod(requestPasswordResetSchema)), {});
+	import {
+		confirmEmailModalState,
+		requestPasswordResetModalState
+	} from '$lib/states/modalState.svelte';
+	import { authClient } from '$lib/client';
+	const form = superForm(defaults(zod(requestPasswordResetSchema)), {
+		SPA: true,
+		validators: zod(requestPasswordResetSchema),
+		onUpdate: async ({ form }) => {
+			if (form.valid) {
+				const { email } = form.data;
+				const { data, error } = await authClient.forgetPassword(
+					{
+						email,
+						redirectTo: '/password-reset'
+					},
+					{
+						onSuccess() {
+							requestPasswordResetModalState.setFalse()
+							confirmEmailModalState.setTrue();
+						}
+					}
+				);
+
+				if (error) {
+					if (error.message) {
+						toast.error(error.message);
+					} else {
+						toast.error(error.statusText);
+					}
+				}
+			}
+		}
+	});
 
 	const { form: formData, enhance, delayed } = form;
 </script>

@@ -14,13 +14,27 @@
 		validators: zod(registerSchema),
 		async onUpdate({ form }) {
 			if (form.valid) {
-				const { data, error } = await authClient.signUp.email({
-					email: 'test@example.com',
-					password: 'password1234',
-					name: 'test',
-					image: 'https://example.com/image.png'
-				});
-				console.log("🚀 ~ onUpdate ~ data:", data)
+				const { name, email, password } = form.data;
+				const { data, error } = await authClient.signUp.email(
+					{
+						email,
+						password,
+						name
+					},
+					{
+						onSuccess(ctx) {
+							toast.success('registration successful');
+							registerModalState.setFalse();
+						}
+					}
+				);
+				if (error) {
+					if (error.message) {
+						toast.error(error.message);
+					} else {
+						toast.error(error.statusText);
+					}
+				}
 			}
 		}
 	});
@@ -38,28 +52,17 @@
 		</Dialog.Header>
 
 		<form method="POST" use:enhance>
-			<div class="flex items-center gap-3">
-				<Form.Field {form} name="firstName">
-					<Form.Control>
-						{#snippet children({ props })}
-							<Form.Label>First name</Form.Label>
-							<Input {...props} bind:value={$formData.firstName} />
-						{/snippet}
-					</Form.Control>
-					<Form.Description>This is your public display first name.</Form.Description>
-					<Form.FieldErrors />
-				</Form.Field>
-				<Form.Field {form} name="lastName">
-					<Form.Control>
-						{#snippet children({ props })}
-							<Form.Label>Last name</Form.Label>
-							<Input {...props} bind:value={$formData.lastName} />
-						{/snippet}
-					</Form.Control>
-					<Form.Description>This is your public display last name.</Form.Description>
-					<Form.FieldErrors />
-				</Form.Field>
-			</div>
+			<Form.Field {form} name="name">
+				<Form.Control>
+					{#snippet children({ props })}
+						<Form.Label>Name</Form.Label>
+						<Input {...props} bind:value={$formData.name} />
+					{/snippet}
+				</Form.Control>
+				<Form.Description>This is your public display username.</Form.Description>
+				<Form.FieldErrors />
+			</Form.Field>
+
 			<Form.Field {form} name="email">
 				<Form.Control>
 					{#snippet children({ props })}

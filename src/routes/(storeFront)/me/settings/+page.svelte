@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { authClient } from '$lib/client';
 	import UpdateEmailModal from '$lib/components/modals/UpdateEmailModal.svelte';
 	import UpdateNameModal from '$lib/components/modals/UpdateNameModal.svelte';
 	import UpdateNumberModal from '$lib/components/modals/UpdateNumberModal.svelte';
@@ -14,11 +15,6 @@
 	</div>
 
 	<div class="flex w-full justify-between gap-5 border-b pb-3">
-		<p class="text-base font-semibold md:text-lg">Mobile number</p>
-		<UpdateNumberModal />
-	</div>
-
-	<div class="flex w-full justify-between gap-5 border-b pb-3">
 		<p class="text-base font-semibold md:text-lg">Name</p>
 		<UpdateNameModal />
 	</div>
@@ -30,6 +26,12 @@
 
 	<div class="flex w-full justify-between gap-5 border-b pb-3">
 		<p class="text-base font-semibold md:text-lg">Log out african market online</p>
-		<Button variant="link">Logout</Button>
+		<Button
+			variant="link"
+			onclick={() => {
+				authClient.signOut();
+				invalidateAll();
+			}}>Logout</Button
+		>
 	</div>
 </div>

@@ -18,17 +18,23 @@ importers:
         specifier: ^0.2.3
         version: 0.2.3
       better-auth:
-        specifier: 1.0.0-canary.3
-        version: 1.0.0-canary.3
+        specifier: 1.0.2
+        version: 1.0.2
       drizzle-orm:
         specifier: ^0.33.0
         version: 0.33.0(@cloudflare/workers-types@4.20241022.0)(@types/better-sqlite3@7.6.11)(better-sqlite3@11.5.0)(kysely@0.27.4)
+      drizzle-zod:
+        specifier: ^0.5.1
+        version: 0.5.1(drizzle-orm@0.33.0(@cloudflare/workers-types@4.20241022.0)(@types/better-sqlite3@7.6.11)(better-sqlite3@11.5.0)(kysely@0.27.4))(zod@3.23.8)
       embla-carousel-autoplay:
         specifier: ^8.3.1
         version: 8.3.1(embla-carousel@8.3.1)
       embla-carousel-fade:
         specifier: ^8.3.1
         version: 8.3.1(embla-carousel@8.3.1)
+      nanoid:
+        specifier: ^5.0.8
+        version: 5.0.8
       nprogress:
         specifier: ^0.2.0
         version: 0.2.0
@@ -1481,11 +1487,11 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  better-auth@1.0.0-canary.3:
-    resolution: {integrity: sha512-3dE7xE7pBGBpqkinzXT/sHTTIDpyDIjuf+62u7iWw5xSH/44Qfn5woehbSxTIVsSIxZWPTK3RTZS4KCjMcmETg==}
+  better-auth@1.0.2:
+    resolution: {integrity: sha512-3sOmwK3s4tvxg4nHbatCczxgW7+1nsB7JnFutFZ9Q4/0Ww8Gqv0PsC7Z5aU4JN0S9urVFBV16o02JZvbT/9DXw==}
 
-  better-call@0.2.15-beta.6:
-    resolution: {integrity: sha512-IIpVe7z7xW5pNOOhOj3u7cEde53v3Duzs4bstDJfLVqdmEiYRUCfy+1w2apf3MqYOHY8gYcd7DbTsvFeBqg4CA==}
+  better-call@0.3.2:
+    resolution: {integrity: sha512-ZYUADh4S4JF3QOIgC0QAm4N9Ifb7v3rOEcwkIxr3UXxd+GCrGmEzv7VDe35o1ldX0Zcb9CX3QfT0jdJoMIKA9w==}
 
   better-sqlite3@11.5.0:
     resolution: {integrity: sha512-e/6eggfOutzoK0JWiU36jsisdWoHOfN9iWiW/SieKvb7SAa6aGNmBM/UKyp+/wWSXpLlWNN8tCPwoDNPhzUvuQ==}
@@ -1749,6 +1755,12 @@ packages:
         optional: true
       sqlite3:
         optional: true
+
+  drizzle-zod@0.5.1:
+    resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
+    peerDependencies:
+      drizzle-orm: '>=0.23.13'
+      zod: '*'
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -4152,14 +4164,14 @@ snapshots:
   base64-js@1.5.1:
     optional: true
 
-  better-auth@1.0.0-canary.3:
+  better-auth@1.0.2:
     dependencies:
       '@better-fetch/fetch': 1.1.12
       '@noble/ciphers': 0.6.0
       '@noble/hashes': 1.5.0
       '@simplewebauthn/browser': 10.0.0
       '@simplewebauthn/server': 10.0.1
-      better-call: 0.2.15-beta.6
+      better-call: 0.3.2
       consola: 3.2.3
       defu: 6.1.4
       jose: 5.9.6
@@ -4172,7 +4184,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  better-call@0.2.15-beta.6:
+  better-call@0.3.2:
     dependencies:
       '@better-fetch/fetch': 1.1.12
       rou3: 0.5.1
@@ -4367,6 +4379,11 @@ snapshots:
       '@types/better-sqlite3': 7.6.11
       better-sqlite3: 11.5.0
       kysely: 0.27.4
+
+  drizzle-zod@0.5.1(drizzle-orm@0.33.0(@cloudflare/workers-types@4.20241022.0)(@types/better-sqlite3@7.6.11)(better-sqlite3@11.5.0)(kysely@0.27.4))(zod@3.23.8):
+    dependencies:
+      drizzle-orm: 0.33.0(@cloudflare/workers-types@4.20241022.0)(@types/better-sqlite3@7.6.11)(better-sqlite3@11.5.0)(kysely@0.27.4)
+      zod: 3.23.8
 
   eastasianwidth@0.2.0: {}
 

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { buttonVariants } from '../ui/button';
+	import { authClient } from '$lib/client';
+
 	import Input from '../ui/input/input.svelte';
 	import { page } from '$app/stores';
 	import * as Form from '$lib/components/ui/form';
@@ -10,7 +12,37 @@
 	import { toast } from 'svelte-sonner';
 	import { zod } from 'sveltekit-superforms/adapters';
 	let modalState = $state(false);
-	const form = superForm(defaults(zod(updatePasswordSchema)), {});
+	const form = superForm(defaults(zod(updatePasswordSchema)), {
+		SPA: true,
+		validators: zod(updatePasswordSchema),
+		onUpdate: async ({ form }) => {
+			if (form.valid) {
+				const { currentPassword, newPassword } = form.data;
+				const { error } = await authClient.changePassword(
+					{
+						newPassword,
+						currentPassword,
+						revokeOtherSessions: true // revoke all other sessions the user is signed into
+					},
+
+					{
+						onSuccess(ctx) {
+							toast.success('password updated successfully');
+							modalState = false;
+						}
+					}
+				);
+
+				if (error) {
+					if (error.message) {
+						toast.error(error.message);
+					} else {
+						toast.error(error.statusText);
+					}
+				}
+			}
+		}
+	});
 
 	const { form: formData, enhance, delayed } = form;
 </script>

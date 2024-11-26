@@ -1,5 +1,8 @@
-import type { PageServerLoad } from './$types';
+export const load = async ({ locals }) => {
+	const { db } = locals;
 
-export const load = (async () => {
-	return {};
-}) satisfies PageServerLoad;
+	const categories = await db.query.categoryTable.findMany();
+	return {
+		categories
+	};
+};

@@ -1,3 +1,4 @@
+import type { TUser } from '$lib/types';
 import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 // for information about these interfaces
@@ -15,9 +16,16 @@ declare global {
 
 		interface Locals {
 			db: DrizzleD1Database<Schema>;
-			user: User | null;
-			session: Session | null;
 			bucket: R2Bucket;
+		}
+		interface PageData {
+			user: TUser;
+		}
+		namespace Superforms {
+			type Message = {
+				type: 'error' | 'success';
+				text: string;
+			};
 		}
 	}
 }
