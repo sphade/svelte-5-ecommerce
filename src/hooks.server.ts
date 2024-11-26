@@ -4,7 +4,6 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { createDb } from '$lib/server/db';
 import { createAuth } from '$lib/auth';
 
-const adminRoutes = ['/admin', '/admin/*'];
 const protectedUserRoutes = ['/me', '/checkout'];
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const { locals, url, request } = event;
