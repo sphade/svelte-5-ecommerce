@@ -1,7 +1,7 @@
 import { createAuth } from '$lib/auth.js';
 import { categorySchema } from '$lib/formSchema';
 import { categoryTable } from '$lib/server/db/schema.js';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 

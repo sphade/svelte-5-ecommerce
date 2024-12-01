@@ -8,6 +8,7 @@
 		Box,
 		Boxes,
 		Group,
+		Home,
 		Layers,
 		Layers2,
 		Package2Icon,
@@ -56,6 +57,11 @@
 			title: 'Settings',
 			url: 'settings',
 			icon: Settings
+		},
+		{
+			title: 'Store front',
+			url: '../',
+			icon: Home
 		}
 	];
 	let sidebarOpen = $state(false);

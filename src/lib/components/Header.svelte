@@ -59,11 +59,26 @@
 					<DropdownMenu.Label>My Account</DropdownMenu.Label>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Group>
-						<DropdownMenu.Item>Profile</DropdownMenu.Item>
-						<DropdownMenu.Item>Order history</DropdownMenu.Item>
-						<DropdownMenu.Item>Redeem code</DropdownMenu.Item>
-						<DropdownMenu.Item>Addresses</DropdownMenu.Item>
-						<DropdownMenu.Item>Settings</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<a href="/ma/personal-info">Profile</a>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<a href="/me/order-history">Order history</a>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<a href="/me/redeem-code">Redeem code</a>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<a href="/me/addresses">Addresses</a>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<a href="/me/settings">Settings</a>
+						</DropdownMenu.Item>
+						{#if $page.data.user.role === 'admin'}
+							<DropdownMenu.Item>
+								<a href="/admin">Admin dashboard</a>
+							</DropdownMenu.Item>
+						{/if}
 					</DropdownMenu.Group>
 					<DropdownMenu.Separator />
 
@@ -91,7 +106,7 @@
 				<Menu class="size-6 " />
 			</button>
 		{/if}
-		{#if true}
+		{#if $page.data.user.cart}
 			<button onclick={() => cartSheetState.setTrue()} class="relative inline-block h-fit w-fit">
 				<div
 					class="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-primary text-xs text-white"

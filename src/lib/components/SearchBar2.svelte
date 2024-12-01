@@ -1,17 +1,19 @@
-<script>
+<script lang="ts">
 	import { Search } from 'lucide-svelte';
-
+	import { queryParam } from 'sveltekit-search-params';
+	let term = queryParam('term');
 </script>
 
 <form
-	class="bg-muted rounded-3xl w-full flex focus-within:ring-2 focus-within:ring-primary px-3.5 items-center justify-between"
+	class="flex w-full items-center justify-between rounded-3xl bg-muted px-3.5 focus-within:ring-2 focus-within:ring-primary"
 >
 	<input
 		type="text"
 		placeholder="search.."
-		class="bg-transparent placeholder:text-muted-foreground flex-1 h-11 outline-none"
+		class="h-11 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
 		name=""
 		id=""
+		bind:value={$term}
 	/>
 	<Search class="text-muted-foreground" />
 </form>

@@ -16,7 +16,7 @@ const uploadFiles = async (files: File[], bucket: R2Bucket) => {
 			const fileUrl = dev
 				? `/api/r2/${key}` // Local development proxy URL
 				: `https://pub-50009b19f23248c1ae243779c481d0f5.r2.dev/${key}`; // Production public URL
-			return fileUrl;
+			return { fileUrl, key };
 		} catch (error) {
 			console.error(`Failed to upload ${file.name}:`, error);
 			throw Error('Failed to upload file');
@@ -50,7 +50,7 @@ export const actions = {
 		// Upload files
 		const uploadResults = await uploadFiles(images, bucket);
 
-		const slug = name.toLowerCase().replaceAll(' ', '-') + nanoid(5);
+		const slug = name.toLowerCase().replaceAll(' ', '-') + '-' + nanoid(5);
 		await db.insert(productTable).values({
 			categoryId: category,
 			description,

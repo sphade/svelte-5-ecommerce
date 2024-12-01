@@ -17,6 +17,7 @@
 	const form = superForm(defaults(user, zod(updateNameSchema)), {
 		SPA: true,
 		validators: zod(updateNameSchema),
+		dataType: 'json',
 		onUpdate: async ({ form }) => {
 			if (form.valid) {
 				const { name } = form.data;

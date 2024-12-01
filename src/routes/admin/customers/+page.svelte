@@ -3,6 +3,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
+	import { ChevronDown } from 'lucide-svelte';
 
 	const customers = [
 		{ id: 1, name: 'Olivia Martin', email: 'olivia.martin@email.com', orders: 5, spent: 299.0 },
@@ -42,7 +43,10 @@
 					<Table.Cell>${customer.spent.toFixed(2)}</Table.Cell>
 					<Table.Cell class="text-right">
 						<Button variant="outline" size="sm" class="mr-2">View</Button>
-						<Button variant="outline" size="sm">Edit</Button>
+						<Button variant="outline" size="icon">
+							<ChevronDown />
+							Edit
+						</Button>
 					</Table.Cell>
 				</Table.Row>
 			{/each}

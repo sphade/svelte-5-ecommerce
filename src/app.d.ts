@@ -1,4 +1,4 @@
-import type { TUser } from '$lib/types';
+import type { TCart, TCartItem, TProduct, TUser } from '$lib/types';
 import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 // for information about these interfaces
@@ -19,7 +19,12 @@ declare global {
 			bucket: R2Bucket;
 		}
 		interface PageData {
-			user: TUser;
+			user: TUser & {
+				addresses: TAddress[];
+				cart: TCart & {
+					cartItems: (TCartItem & { product: TProduct })[];
+				};
+			};
 		}
 		namespace Superforms {
 			type Message = {

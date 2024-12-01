@@ -12,7 +12,16 @@
 	import { toast } from 'svelte-sonner';
 	import { addressModalState } from '$lib/states/modalState.svelte';
 
-	const form = superForm(defaults(zod(addressSchema)), {});
+	const form = superForm(defaults(zod(addressSchema)), {
+		validators: zod(addressSchema),
+		onUpdated({ form }) {
+			const { valid, message } = form;
+			if (valid) {
+				toast.success(message?.text || '');
+				addressModalState.setFalse();
+			}
+		}
+	});
 
 	const { form: formData, enhance, delayed } = form;
 </script>
@@ -24,7 +33,7 @@
 			<Dialog.Title class="font-display font-medium md:text-xl">Add Address</Dialog.Title>
 		</Dialog.Header>
 
-		<form method="POST" use:enhance>
+		<form method="POST" use:enhance action="/me/addresses/?/addAddress">
 			<Form.Field {form} name="name">
 				<Form.Control>
 					{#snippet children({ props })}

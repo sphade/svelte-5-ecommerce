@@ -1,18 +1,12 @@
 import { productTable } from '$lib/server/db/schema.js';
+import { getProducts } from '$lib/server/queries.js';
 import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
-export const load = async ({ locals: { db } }) => {
-	const products = await db.query.productTable.findMany({
-		with: {
-			category: {
-				columns: {
-					name: true
-				}
-			}
-		},
-		orderBy: (product, { asc }) => asc(product.createdAt)
-	});
+export const load = async ({ locals: { db }, url }) => {
+	const term = url.searchParams.get('term') || '';
+	const products = await getProducts({ db, term });
+
 	return {
 		products
 	};
@@ -31,7 +25,10 @@ export const actions = {
 					message: 'Failed to delete product. Please try again.'
 				});
 			}
-			await bucket.delete(res.images);
+			const keys = res.images.map((image) => {
+				return image.key;
+			});
+			await bucket.delete(keys);
 			// Return a success message
 			return {
 				message: 'Product successfully deleted!'

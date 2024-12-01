@@ -1,18 +1,19 @@
 import { ROLE, STATUS } from '../../constant';
 import { relations, sql } from 'drizzle-orm';
-import { sqliteTable, text, integer, primaryKey, check } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, primaryKey, check, index } from 'drizzle-orm/sqlite-core';
+import { nanoid } from 'nanoid';
 // ;
 export const timestamps = {
 	updatedAt: integer('updated_at', {
 		mode: 'timestamp'
 	})
 		.notNull()
-		.$onUpdate(() => sql`CURRENT_TIMESTAMP`),
+		.$onUpdate(() => new Date()),
 	createdAt: integer('created_at', {
 		mode: 'timestamp'
 	})
 		.notNull()
-		.default(sql`(cast(strftime('%s', 'now') as int))`)
+		.default(new Date())
 };
 export function array<T>(name: string) {
 	return text(name, { mode: 'json' }).$type<T[]>();
@@ -117,24 +118,72 @@ export const categoryTable = sqliteTable(
 	})
 );
 
-export const productTable = sqliteTable('product', {
+export const productTable = sqliteTable(
+	'product',
+	{
+		id: integer('id').primaryKey(),
+		name: text('name').notNull(),
+		description: text('description').notNull(),
+		categoryId: integer('category_id')
+			.notNull()
+			.references(() => categoryTable.id),
+		subCategory: text('sub_category').notNull(),
+		price: integer('price').notNull(),
+		stock: integer('stock').notNull(),
+		images: array<{ fileUrl: string; key: string }>('images').notNull(),
+		slug: text('slug').unique().notNull(),
+		sku: text('sku').$default(() => `SKU-${nanoid(8)}`),
+		adminId: text('admin_id')
+			.references(() => user.id)
+			.notNull(),
+		...timestamps
+	},
+	(t) => {
+		return {
+			nameIdx: index('name_idx').on(t.name),
+			descIdx: index('desc_idx').on(t.description)
+		};
+	}
+);
+export const addressTable = sqliteTable('address', {
 	id: integer('id').primaryKey(),
-	name: text('name').notNull(),
-	description: text('description'),
-	categoryId: integer('category_id')
+	label: text('label').notNull(),
+	address: text('address').notNull(),
+	state: text('state'),
+	country: text('country').notNull(),
+	isDefaultShipping: integer('is_default_shipping', { mode: 'boolean' }).notNull(),
+	isDefaultBilling: integer('is_default_billing', { mode: 'boolean' }).notNull(),
+	userId: text('user_id')
 		.notNull()
-		.references(() => categoryTable.id),
-	subCategory: text('sub_category').notNull(),
-	price: integer('price').notNull(),
-	stock: integer('stock').notNull(),
-	images: array<string>('images').notNull(),
-	slug: text('slug').unique().notNull(),
-	adminId: text('admin_id')
-		.references(() => user.id)
-		.notNull(),
-
+		.references(() => user.id),
 	...timestamps
 });
+export const cartTable = sqliteTable('cart', {
+	id: integer('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id),
+	...timestamps
+});
+export const cartItemTable = sqliteTable(
+	'cart_item',
+	{
+		cartId: integer('cart_id')
+			.notNull()
+			.references(() => cartTable.id),
+		productId: integer('product_id')
+			.notNull()
+			.references(() => productTable.id),
+		quantity: integer('quantity').notNull().default(1),
+
+		priceAtTimeOfAddition: integer('price_at_addition').notNull(),
+		...timestamps
+	},
+	(table) => ({
+		// Ensure unique combination of cart and product to prevent duplicate entries
+		pk: primaryKey({ columns: [table.cartId, table.productId] })
+	})
+);
 
 export const orderTable = sqliteTable('order', {
 	id: text('id').primaryKey(),
@@ -158,8 +207,9 @@ export const orderProductTable = sqliteTable(
 		productId: integer('product_id')
 			.notNull()
 			.references(() => productTable.id),
-		quantity: integer('quantity').notNull().default(1)
+		quantity: integer('quantity').notNull().default(1),
 		// Optional: Add any additional fields specific to this order-product relationship
+		...timestamps
 	},
 	(t) => ({
 		pk: primaryKey({ columns: [t.orderId, t.productId] })
@@ -193,7 +243,32 @@ export const orderProductRelations = relations(orderProductTable, ({ one }) => (
 		references: [productTable.id]
 	})
 }));
+export const userRelation = relations(user, ({ many, one }) => ({
+	addresses: many(addressTable),
+	cart: one(cartTable)
+}));
 
-// export const categoryRelations = relations(categoryTable, ({ many }) => ({
-// 	products: many(productTable)
-// }));
+export const addressRelations = relations(addressTable, ({ one }) => ({
+	user: one(user, {
+		fields: [addressTable.userId],
+		references: [user.id]
+	})
+}));
+export const cartRelations = relations(cartTable, ({ many, one }) => ({
+	user: one(user, {
+		fields: [cartTable.userId],
+		references: [user.id]
+	}),
+	cartItems: many(cartItemTable)
+}));
+
+export const cartItemRelations = relations(cartItemTable, ({ one }) => ({
+	cart: one(cartTable, {
+		fields: [cartItemTable.cartId],
+		references: [cartTable.id]
+	}),
+	product: one(productTable, {
+		fields: [cartItemTable.productId],
+		references: [productTable.id]
+	})
+}));

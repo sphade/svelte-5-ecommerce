@@ -8,7 +8,19 @@ export const load = async ({ request, locals }) => {
 	});
 	const id = session?.user.id || '';
 	const user = await db.query.user.findFirst({
-		where: (user, { eq }) => eq(user.id, id)
+		where: (user, { eq }) => eq(user.id, id),
+		with: {
+			addresses: true,
+			cart: {
+				with: {
+					cartItems: {
+						with: {
+							product: true
+						}
+					}
+				}
+			}
+		}
 	});
 	return {
 		user
