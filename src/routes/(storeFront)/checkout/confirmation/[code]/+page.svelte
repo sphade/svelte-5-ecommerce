@@ -4,45 +4,11 @@
 	import { formatCurrency } from '$lib/utils.js';
 
 	import { Confetti } from 'svelte-confetti';
+	import { SHIPPING_FEE } from '$lib/constant';
 
 	// Dummy data
-	let data = {
-		order: {
-			code: 'ORDER-12345',
-			currencyCode: 'USD',
-			lines: [
-				{
-					featuredAsset: {
-						preview: 'https://placehold.co/600x400',
-						id: 'product-image-1'
-					},
-					id: 'line-item-1',
-					linePriceWithTax: 19.99,
-					productVariant: {
-						name: 'T-Shirt',
-						sku: 'TSHIRT-001'
-					},
-					quantity: 2
-				},
-				{
-					featuredAsset: {
-						preview: 'https://placehold.co/600x400',
-						id: 'product-image-2'
-					},
-					id: 'line-item-2',
-					linePriceWithTax: 29.99,
-					productVariant: {
-						name: 'Hoodie',
-						sku: 'HOODIE-002'
-					},
-					quantity: 1
-				}
-			],
-			subTotalWithTax: 49.98,
-			shippingWithTax: 5.99,
-			totalWithTax: 55.97
-		}
-	};
+	let { data } = $props();
+	let subTotal = data?.order?.amount || 0;
 </script>
 
 <div
@@ -90,22 +56,22 @@
 		Your order has been received! <span class="font-medium">{data.order?.code}</span>
 	</p>
 	<div class="space-y-3 divide-y">
-		{#each data.order.lines as { featuredAsset, id, linePriceWithTax, productVariant, quantity } (id)}
+		{#each data.order?.orderProducts ?? [] as { product: { images, sku, stock, name, price }, quantity }}
 			<div
 				class="flex justify-between gap-5 rounded-lg px-1 py-3 transition-colors hover:bg-slate-50"
 			>
 				<img
-					src={featuredAsset?.preview}
+					src={images[0].fileUrl}
 					class="h-24 w-36 rounded-md object-cover"
-					alt={featuredAsset?.id}
+					alt={images[0].key}
 				/>
 				<div class="flex-1 space-y-3">
-					<p class="font-semibold capitalize">{productVariant.name}</p>
+					<p class="font-semibold capitalize">{name}</p>
 					<p class="text-xs text-muted-foreground">
-						{productVariant.sku}
+						{sku}
 					</p>
 					<p class="text-sm text-primary">
-						{formatCurrency(Number(linePriceWithTax), data.order.currencyCode)}
+						{formatCurrency(price)}
 					</p>
 				</div>
 				<button class="h-10 w-10 rounded-md border-2 border-border"> {quantity} </button>
@@ -114,16 +80,16 @@
 		<div class="space-y-5 py-5">
 			<div class="flex items-center justify-between">
 				<p>Subtotal</p>
-				<p>{formatCurrency(Number(data.order.subTotalWithTax), data.order.currencyCode)}</p>
+				<p>{formatCurrency(subTotal)}</p>
 			</div>
 			<div class="flex items-center justify-between">
 				<p>Shipping</p>
-				<p>{formatCurrency(Number(data.order.shippingWithTax), data.order.currencyCode)}</p>
+				<p>{formatCurrency(SHIPPING_FEE)}</p>
 			</div>
 		</div>
 		<div class="flex items-center justify-between">
 			<p class="py-5 font-semibold">Total</p>
-			<p>{formatCurrency(Number(data.order.totalWithTax), data.order.currencyCode)}</p>
+			<p>{formatCurrency(subTotal + SHIPPING_FEE)}</p>
 		</div>
 	</div>
 </div>

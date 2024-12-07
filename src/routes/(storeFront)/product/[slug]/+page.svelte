@@ -20,7 +20,7 @@
 	<h1 class=" mt-3 text-2xl font-semibold capitalize md:mt-5 md:text-4xl">{data.product?.name}</h1>
 
 	<div class="mt-5 flex flex-col gap-5 md:mt-10 md:flex-row">
-		<Carousel.Root class="basis-[600px]">
+		<Carousel.Root class="w-[600px]">
 			<Carousel.Content class="border  border-red-500">
 				{#each data.product.images as image}
 					<Carousel.Item
@@ -53,23 +53,25 @@
 						// Check if there's a message in the result
 						if (result.type === 'success') {
 							const data = result.data as ActionData;
-
+							quantity = 1;
 							toast.success(data?.message!);
 						} else if (result.type === 'failure') {
 							const data = result.data as ActionData;
-
-							toast.error(data?.message!, {
-								action: {
-									label: 'login',
-									onClick: () => loginModalState.setTrue()
-								}
-							});
+							if (result.status === 401) {
+								toast.error(data?.message!, {
+									action: {
+										label: 'login',
+										onClick: () => loginModalState.setTrue()
+									}
+								});
+								return;
+							}
+							toast.error(data?.message!);
 						}
 					};
 				}}
 			>
-				{data.product.stock}
-				<input value={quantity} name="quantity" type="number" hidden />
+				<input bind:value={quantity} name="quantity" type="number" hidden />
 				<div class="flex items-center gap-4 rounded-lg border border-primary/10 bg-primary/10 p-2">
 					<Button disabled={quantity <= 1} onclick={() => quantity--} size="icon" variant="outline">
 						<Minus />

@@ -1,5 +1,5 @@
 // const modalState = (modalState: boolean) => {
-// 	const state = $state({ value: modalState });
+// 	 $state = $state({ value: modalState });
 // 	function setTrue() {
 // 		state.value = true;
 // 	}
@@ -14,7 +14,10 @@
 // 		setTrue,
 // 		setFalse,
 // 		toggleModal,
-// 		state
+// 		get() {
+
+// 			return state
+// 		}
 // 	};
 // };
 

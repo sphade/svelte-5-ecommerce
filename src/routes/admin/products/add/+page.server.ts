@@ -51,17 +51,22 @@ export const actions = {
 		const uploadResults = await uploadFiles(images, bucket);
 
 		const slug = name.toLowerCase().replaceAll(' ', '-') + '-' + nanoid(5);
-		await db.insert(productTable).values({
-			categoryId: category,
-			description,
-			images: uploadResults,
-			name,
-			price,
-			stock,
-			subCategory,
-			slug,
-			adminId: session?.user.id || ''
-		});
+		try {
+			await db.insert(productTable).values({
+				categoryId: category,
+				description,
+				images: uploadResults,
+				name,
+				price,
+				stock,
+				subCategory,
+				slug,
+				adminId: session?.user.id || ''
+			});
+		} catch (e) {
+			console.log('🚀 ~ default: ~ e:', e);
+		}
+
 		redirect(303, '/admin/products');
 	}
 };

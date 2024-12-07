@@ -60,6 +60,7 @@
   "dependencies": {
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
+    "@stripe/stripe-js": "^5.2.0",
     "@types/nprogress": "^0.2.3",
     "better-auth": "1.0.2",
     "drizzle-orm": "^0.33.0",
@@ -68,7 +69,9 @@
     "embla-carousel-fade": "^8.3.1",
     "nanoid": "^5.0.8",
     "nprogress": "^0.2.0",
+    "stripe": "^17.4.0",
     "svelte-confetti": "^2.1.2",
+    "svelte-stripe": "^1.3.0",
     "sveltekit-search-params": "^3.0.0"
   }
 }

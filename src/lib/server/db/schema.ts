@@ -104,19 +104,13 @@ export const verification = sqliteTable('verification', {
 	})
 });
 
-export const categoryTable = sqliteTable(
-	'category',
-	{
-		id: integer('id').primaryKey(),
-		name: text('name').notNull(),
-		description: text('description'),
-		subCategories: array<string>('sub_categories').notNull(),
-		...timestamps
-	},
-	(table) => ({
-		checkConstraint: check('name_check', sql`${table.name} < 1`)
-	})
-);
+export const categoryTable = sqliteTable('category', {
+	id: integer('id').primaryKey(),
+	name: text('name').notNull(),
+	description: text('description'),
+	subCategories: array<string>('sub_categories').notNull(),
+	...timestamps
+});
 
 export const productTable = sqliteTable(
 	'product',
@@ -126,7 +120,7 @@ export const productTable = sqliteTable(
 		description: text('description').notNull(),
 		categoryId: integer('category_id')
 			.notNull()
-			.references(() => categoryTable.id),
+			.references(() => categoryTable.id, { onDelete: 'cascade' }),
 		subCategory: text('sub_category').notNull(),
 		price: integer('price').notNull(),
 		stock: integer('stock').notNull(),
@@ -155,14 +149,14 @@ export const addressTable = sqliteTable('address', {
 	isDefaultBilling: integer('is_default_billing', { mode: 'boolean' }).notNull(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: 'cascade' }),
 	...timestamps
 });
 export const cartTable = sqliteTable('cart', {
 	id: integer('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: 'cascade' }),
 	...timestamps
 });
 export const cartItemTable = sqliteTable(
@@ -170,10 +164,10 @@ export const cartItemTable = sqliteTable(
 	{
 		cartId: integer('cart_id')
 			.notNull()
-			.references(() => cartTable.id),
+			.references(() => cartTable.id, { onDelete: 'cascade' }),
 		productId: integer('product_id')
 			.notNull()
-			.references(() => productTable.id),
+			.references(() => productTable.id, { onDelete: 'cascade' }),
 		quantity: integer('quantity').notNull().default(1),
 
 		priceAtTimeOfAddition: integer('price_at_addition').notNull(),
@@ -186,27 +180,31 @@ export const cartItemTable = sqliteTable(
 );
 
 export const orderTable = sqliteTable('order', {
-	id: text('id').primaryKey(),
+	id: integer('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: 'cascade' }),
 	status: text('status', { enum: STATUS }).notNull(),
 	amount: integer('amount').notNull(),
-	products: integer('product_id')
+	addressId: integer('address_id')
+		.references(() => addressTable.id)
+		.notNull(),
+	code: text('code')
 		.notNull()
-		.references(() => productTable.id),
+		.$default(() => nanoid(8)),
+
 	...timestamps
 });
 // Order to Product junction table
 export const orderProductTable = sqliteTable(
 	'order_product',
 	{
-		orderId: text('order_id')
+		orderId: integer('order_id')
 			.notNull()
-			.references(() => orderTable.id),
+			.references(() => orderTable.id, { onDelete: 'cascade' }),
 		productId: integer('product_id')
 			.notNull()
-			.references(() => productTable.id),
+			.references(() => productTable.id, { onDelete: 'cascade' }),
 		quantity: integer('quantity').notNull().default(1),
 		// Optional: Add any additional fields specific to this order-product relationship
 		...timestamps
@@ -245,7 +243,8 @@ export const orderProductRelations = relations(orderProductTable, ({ one }) => (
 }));
 export const userRelation = relations(user, ({ many, one }) => ({
 	addresses: many(addressTable),
-	cart: one(cartTable)
+	cart: one(cartTable),
+	orders: many(orderTable)
 }));
 
 export const addressRelations = relations(addressTable, ({ one }) => ({
@@ -271,4 +270,8 @@ export const cartItemRelations = relations(cartItemTable, ({ one }) => ({
 		fields: [cartItemTable.productId],
 		references: [productTable.id]
 	})
+}));
+
+export const categoryRelations = relations(categoryTable, ({ many }) => ({
+	products: many(productTable)
 }));

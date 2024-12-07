@@ -1,66 +1,12 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Table from '$lib/components/ui/table';
+	import { toast } from 'svelte-sonner';
 	let { data } = $props();
 	console.log('🚀 ~ data:', data);
-	const categories = [
-		{
-			id: 1,
-			noOfProducts: 100,
-			subCategoryCount: 100,
-			role: 'Customer',
-			status: 'Active',
-			joinDate: '2023-01-15',
-			lastLogin: '2023-10-01',
-			totalSpent: 250.0,
-			orderCount: 5
-		},
-		{
-			id: 2,
-			name: 'Sarah Johnson',
-			subCategoryCount: 100,
-			role: 'Customer',
-			status: 'Active',
-			joinDate: '2023-02-20',
-			lastLogin: '2023-09-28',
-			totalSpent: 150.5,
-			orderCount: 3
-		},
-		{
-			id: 3,
-			name: 'Mike Wilson',
-			subCategoryCount: 100,
-			role: 'Admin',
-			status: 'Active',
-			joinDate: '2023-03-10',
-			lastLogin: '2023-10-02',
-			totalSpent: 500.0,
-			orderCount: 10
-		},
-		{
-			id: 4,
-			name: 'Emma Davis',
-			subCategoryCount: 100,
-			role: 'Customer',
-			status: 'Inactive',
-			joinDate: '2023-04-05',
-			lastLogin: '2023-08-15',
-			totalSpent: 75.0,
-			orderCount: 2
-		},
-		{
-			id: 5,
-			name: 'James Brown',
-			subCategoryCount: 100,
-			role: 'Customer',
-			status: 'Active',
-			joinDate: '2023-05-12',
-			lastLogin: '2023-09-30',
-			totalSpent: 300.25,
-			orderCount: 6
-		}
-	];
+	
 </script>
 
 <div class="flex-1 space-y-4 p-8 pt-6">
@@ -91,7 +37,27 @@
 					<Table.Cell>{category.description || 'no description'}</Table.Cell>
 
 					<Table.Cell class="text-right">
-						<Button variant="outline" size="sm">Delete</Button>
+						<form action="?/deleteCategory" method="POST" class="inline"
+						use:enhance={({}) => {
+							return async ({ update, result }) => {
+								// Wait for the form to be updated
+								await update();
+								// Check if there's a message in the result
+								if (result.type === 'success') {
+									const data = result.data as any;
+
+									toast.success(data?.message!);
+								} else if (result.type === 'failure') {
+									const data = result.data as any;
+
+									toast.error(data?.message!);
+								}
+							};
+						}}
+						>
+							<input type="text" name="id" value={category.id} hidden />
+							<Button type="submit" variant="outline" size="sm">Delete</Button>
+						</form>
 					</Table.Cell>
 				</Table.Row>
 			{/each}

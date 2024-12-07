@@ -5,6 +5,15 @@
 	import OrderList from '../OrderList.svelte';
 	import { cartSheetState } from '$lib/states/modalState.svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+
+	const totalPrice = $derived(
+		$page.data.user?.cart?.cartItems.reduce(
+			(total, item) => total + item.quantity * item.product.price,
+			0
+		)
+	);
 </script>
 
 <Sheet.Root bind:open={cartSheetState.value}>
@@ -14,16 +23,17 @@
 		</Sheet.Header>
 		<OrderList />
 		<p class="my-5 capitalize md:my-0">
-			100 : <span class="font-semibold">{formatCurrency(100)}</span>
+			total : <span class="font-semibold">{formatCurrency(totalPrice)}</span>
 		</p>
 		<Sheet.Footer>
-			<Sheet.Close asChild>
-				{#snippet children({})}
-					<Button href="/checkout" class="h-[50px]"
-						>Proceed To Checkout <ShoppingBasket class="ml-3 " />
-					</Button>
-				{/snippet}
-			</Sheet.Close>
+			<Button
+				class="h-[50px]"
+				onclick={() => {
+					cartSheetState.setFalse();
+					goto('/checkout');
+				}}
+				>Proceed To Checkout <ShoppingBasket class="ml-3 " />
+			</Button>
 		</Sheet.Footer>
 	</Sheet.Content>
 </Sheet.Root>

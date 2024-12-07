@@ -60,7 +60,7 @@
 					<DropdownMenu.Separator />
 					<DropdownMenu.Group>
 						<DropdownMenu.Item>
-							<a href="/ma/personal-info">Profile</a>
+							<a href="/me/personal-info">Profile</a>
 						</DropdownMenu.Item>
 						<DropdownMenu.Item>
 							<a href="/me/order-history">Order history</a>
@@ -106,12 +106,13 @@
 				<Menu class="size-6 " />
 			</button>
 		{/if}
-		{#if $page.data.user.cart}
+
+		{#if $page.data?.user?.cart?.cartItems}
 			<button onclick={() => cartSheetState.setTrue()} class="relative inline-block h-fit w-fit">
 				<div
 					class="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-primary text-xs text-white"
 				>
-					5
+					{$page.data.user.cart.cartItems.length}
 				</div>
 				<ShoppingCart class="h-6 w-6" />
 			</button>
@@ -121,8 +122,10 @@
 <LoginModal />
 <RegisterModal />
 <ConfirmEmailModal />
-<CartSheet />
 <ResetPasswordModal />
 <MobileAuth />
+{#if $page.data.user?.cart?.cartItems}
+	<CartSheet />
+{/if}
 <!-- 
 -->

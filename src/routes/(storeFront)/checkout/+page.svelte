@@ -10,23 +10,10 @@
 	import { formatCurrency } from '$lib/utils';
 	import OrderList from '$lib/components/OrderList.svelte';
 	import { toast } from 'svelte-sonner';
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	let shippingMethodId = 1;
-
-	const contactForm = {
-		fullName: 'John Doe',
-		email: 'john.doe@example.com',
-		phoneNumber: '123-456-7890'
-	};
-
-	const shippingForm = {
-		fullName: 'John Doe',
-		address1: '123 Main Street',
-		address2: 'Apt 4B',
-		city: 'New York',
-		state: 'NY',
-		postalCode: '10001'
-	};
 
 	const data = $state({
 		user: {
@@ -83,8 +70,19 @@
 
 	const activeOrder = data?.activeOrder;
 
-	const defaultAddress =
-		data?.user?.activeCustomer?.defaultAddress || data?.activeOrder?.shippingAddress;
+	// let defaultAddress = $derived(
+	// 	$page.data.user.addresses.find((a) => {
+	// 		return a.isDefaultShipping === true;
+	// 	})
+	// );
+	const defaultAddress = $page.data.user.addresses.find((a) => {
+		return a.isDefaultShipping === true;
+	});
+
+	let cartItems = $derived($page.data.user?.cart?.cartItems ?? []);
+	let totalPrice = $derived(
+		cartItems.reduce((total, item) => total + item.quantity * item.product.price, 0)
+	);
 </script>
 
 <main>
@@ -110,68 +108,48 @@
 		class="m-auto my-0 flex h-full w-full max-w-6xl flex-col gap-5 px-2 py-5 sm:px-4 md:px-10 md:py-20 lg:flex-row lg:justify-between xl:px-0"
 	>
 		<div class="flex w-full flex-col gap-10 md:gap-10 lg:gap-20">
-			{#if false}
-				<div class="flex flex-col gap-4">
-					<h4
-						class="font-display text-lg font-semibold leading-loose tracking-wide md:text-2xl lg:text-3xl"
+			<div class="flex flex-col gap-4">
+				<h4
+					class="font-display text-lg font-semibold leading-loose tracking-wide md:text-2xl lg:text-3xl"
+				>
+					Delivery method
+				</h4>
+				<ul class="flex flex-col gap-1">
+					<a
+						href="/me/addresses"
+						class="flex h-[auto] w-full cursor-pointer items-center justify-between rounded border-b py-5 transition-[shadow] md:border md:border-[#2021251f] md:px-4 md:hover:shadow lg:max-w-[600px]"
 					>
-						Delivery method
-					</h4>
-					<ul class="flex flex-col gap-1">
-						<a
-							href="/me/addresses"
-							class="flex h-[auto] w-full cursor-pointer items-center justify-between rounded border-b py-5 transition-[shadow] md:border md:border-[#2021251f] md:px-4 md:hover:shadow lg:max-w-[600px]"
-						>
-							<div class="flex items-center gap-3">
-								<Bike />
-								<p class="text-sm font-normal md:text-base">
-									{#if defaultAddress}
-										This delivery would be made to <span
-											class="font-medium capitalize text-muted-foreground"
-											>{defaultAddress.fullName}</span
-										> , (change it)
-									{:else}
-										Please add a delivery address or set one as your default
-									{/if}
-								</p>
-							</div>
-							<ChevronRight />
-						</a>
-					</ul>
-				</div>
-				<RadioGroup.Root value={''} class="gap-5 md:gap-10">
-					{#each data.shippingMethods ?? [] as shippingMethod}
-						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value="" />
-							<Label>
-								{shippingMethod.name}
-								<span class="text-muted-foreground">
-									{formatCurrency(Number(shippingMethod.price))}</span
-								>
-							</Label>
+						<div class="flex items-center gap-3">
+							<Bike />
+							<p class="text-sm font-normal md:text-base">
+								{#if defaultAddress}
+									This delivery would be made to <span
+										class="font-medium capitalize text-muted-foreground"
+										>{defaultAddress.label}</span
+									> , (change it)
+								{:else}
+									Please add a delivery address or set one as your default
+								{/if}
+							</p>
 						</div>
-					{/each}
-					<!-- <RadioGroup.Input name="spacing" /> -->
-				</RadioGroup.Root>
-			{:else}
-				<GuestContact />
-
-				<GuestShippingInformation />
-				<RadioGroup.Root class="gap-5 md:gap-10">
-					{#each data.shippingMethods ?? [] as shippingMethod}
-						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value={'shippingMethod.id'} id={'shippingMethod.id'} />
-							<Label>
-								{shippingMethod.name}
-								<span class="text-muted-foreground">
-									{formatCurrency(Number(shippingMethod.price))}</span
-								>
-							</Label>
-						</div>
-					{/each}
-					<!-- <RadioGroup.Input name="spacing" /> -->
-				</RadioGroup.Root>
-			{/if}
+						<ChevronRight />
+					</a>
+				</ul>
+			</div>
+			<RadioGroup.Root value={''} class="gap-5 md:gap-10">
+				{#each data.shippingMethods ?? [] as shippingMethod}
+					<div class="flex items-center space-x-2">
+						<RadioGroup.Item value="" />
+						<Label>
+							{shippingMethod.name}
+							<span class="text-muted-foreground">
+								{formatCurrency(Number(shippingMethod.price))}</span
+							>
+						</Label>
+					</div>
+				{/each}
+				<!-- <RadioGroup.Input name="spacing" /> -->
+			</RadioGroup.Root>
 
 			<div class="flex h-[auto] w-full flex-col gap-4 py-4 lg:max-w-[600px]">
 				<h4 class="font-display text-lg font-semibold tracking-wide md:text-2xl lg:text-3xl">
@@ -196,12 +174,12 @@
 					<ul class="flex flex-col gap-3 border-b pb-5 pt-2">
 						<li class="flex items-center justify-between">
 							<p class="text-sm font-medium lg:text-base">
-								Item subtotal ({activeOrder?.lines?.length || 0} item)
+								Item subtotal ({cartItems.length || 0} item)
 							</p>
 							<span
 								class="rounded-md bg-primary/20 px-2 py-1 text-sm font-medium text-primary lg:text-base"
 							>
-								{formatCurrency(activeOrder?.subTotalWithTax, activeOrder?.currencyCode)}
+								{formatCurrency(totalPrice)}
 							</span>
 						</li>
 						<li class="flex items-center justify-between">
@@ -223,14 +201,12 @@
 						<span
 							class="rounded-md bg-primary/20 px-2 py-1 text-sm font-medium text-primary lg:text-base"
 						>
-							{formatCurrency(
-								(activeOrder?.subTotalWithTax || 0) +
-									(Number(data.shippingMethods.find((m) => m.id === shippingMethodId)?.price) || 0),
-								activeOrder?.currencyCode
-							)}
+							{formatCurrency(totalPrice + 5)}
 						</span>
 					</div>
-					<Button class="w-full">Proceed To Make Payment</Button>
+					<Button class="w-full" disabled={!!defaultAddress} href="/checkout/payment"
+						>Proceed To Make Payment</Button
+					>
 				</div>
 			</div>
 		</div>

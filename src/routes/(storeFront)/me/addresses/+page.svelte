@@ -55,14 +55,7 @@
 						</div>
 					</Card.Content>
 					<Card.Footer class=" -pb-2 gap-5 pt-1 text-sm">
-						<Button
-							variant="ghost"
-							class="flex items-center gap-2"
-							href="/me/addresses/edit/{address.id}"
-						>
-							<Pen class="size-3" />
-							<p>Edit</p>
-						</Button>
+						
 						<Button
 							onclick={() => {
 								addressId = address.id;

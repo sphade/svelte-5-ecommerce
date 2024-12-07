@@ -23,9 +23,6 @@
 	}
 	const images = filesProxy(form, 'images');
 	let previews = $derived(Array.from($images).map((file) => URL.createObjectURL(file)));
-	$effect(() => {
-		console.log($errors);
-	});
 </script>
 
 <div class="flex-1 space-y-4 p-8 pt-6">

@@ -1,6 +1,6 @@
 import { createAuth } from '$lib/auth.js';
-import { cartItemTable, cartTable } from '$lib/server/db/schema.js';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { cartItemTable, cartTable, productTable } from '$lib/server/db/schema.js';
+import { error, fail } from '@sveltejs/kit';
 import { sql } from 'drizzle-orm';
 
 export const load = async ({ locals: { db }, params }) => {
@@ -27,22 +27,26 @@ export const actions = {
 			headers: request.headers
 		});
 		if (!session) {
-			return fail(400, {
-				message: 'you need to  login first'
+			return fail(401, {
+				message: 'You need to log in first'
 			});
 		}
+
 		const userId = session.user.id;
 		const product = await db.query.productTable.findFirst({
 			where: (product, { eq }) => eq(product.slug, slug),
 			columns: {
 				id: true,
 				price: true,
-				name: true
+				name: true,
+				stock: true
 			}
 		});
+
 		if (!product) {
-			error(404);
+			throw error(404, 'Product not found');
 		}
+
 		// First, check if user has an existing cart
 		let cart = await db.query.cartTable.findFirst({
 			where: (cart, { eq }) => eq(cart.userId, userId)
@@ -58,23 +62,53 @@ export const actions = {
 				.returning()
 				.get();
 		}
+
+		// Check if the product is already in the user's cart
+		const existingCartItem = await db.query.cartItemTable.findFirst({
+			where: (cartItem, { eq, and }) =>
+				and(eq(cartItem.cartId, cart.id), eq(cartItem.productId, product.id)),
+			columns: {
+				quantity: true
+			}
+		});
+
+		const alreadyInCart = existingCartItem?.quantity || 0;
+		console.log('🚀 ~ addToOrder: ~ alreadyInCart:', alreadyInCart);
+		const availableStock = product.stock - alreadyInCart;
+		console.log('🚀 ~ addToOrder: ~ availableStock:', availableStock);
+		const quantityToAdd = Math.min(quantity, availableStock);
+		console.log('🚀 ~ addToOrder: ~ quantity:', quantity);
+		console.log('🚀 ~ addToOrder: ~ quantityToAdd:', quantityToAdd);
+
+		if (quantityToAdd === 0) {
+			return fail(400, {
+				message: `Sorry ${product.name} isn't available.`
+			});
+		}
+
 		await db
 			.insert(cartItemTable)
 			.values({
 				cartId: cart.id,
 				productId: product.id,
 				priceAtTimeOfAddition: product.price,
-				quantity
+				quantity: quantityToAdd
 			})
 			.onConflictDoUpdate({
 				target: [cartItemTable.cartId, cartItemTable.productId],
 				set: {
-					quantity: sql`${cartItemTable.quantity} + ${quantity}`,
+					quantity: sql`${cartItemTable.quantity} + ${quantityToAdd}`,
 					priceAtTimeOfAddition: product.price
 				}
 			});
+
+		const message =
+			quantityToAdd < quantity
+				? `Only ${quantityToAdd} of ${product.name} could be added to your cart due to stock limitations.`
+				: `${quantityToAdd} ${product.name} added to cart.`;
+
 		return {
-			message: `${quantity} ${product.name} added to cart `
+			message
 		};
 	}
 };

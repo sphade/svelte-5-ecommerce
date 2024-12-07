@@ -21,8 +21,8 @@ declare global {
 		interface PageData {
 			user: TUser & {
 				addresses: TAddress[];
-				cart: TCart & {
-					cartItems: (TCartItem & { product: TProduct })[];
+				cart?: TCart & {
+					cartItems?: (TCartItem & { product: TProduct })[];
 				};
 			};
 		}

@@ -19,6 +19,15 @@ export const load = async ({ request, locals }) => {
 						}
 					}
 				}
+			},
+			orders: {
+				with: {
+					orderProducts: {
+						with: {
+							product: true
+						}
+					}
+				}
 			}
 		}
 	});

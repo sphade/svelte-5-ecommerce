@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { Search } from 'lucide-svelte';
-	import { queryParam } from 'sveltekit-search-params';
-	let term = queryParam('term');
+	import { queryParam, ssp } from 'sveltekit-search-params';
+	let term = queryParam('term', ssp.string(), {
+		debounceHistory: 500,
+		pushHistory: false
+	});
 </script>
 
 <form

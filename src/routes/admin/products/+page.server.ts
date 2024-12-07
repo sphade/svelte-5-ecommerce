@@ -1,11 +1,16 @@
 import { productTable } from '$lib/server/db/schema.js';
-import { getProducts } from '$lib/server/queries.js';
 import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
 export const load = async ({ locals: { db }, url }) => {
 	const term = url.searchParams.get('term') || '';
-	const products = await getProducts({ db, term });
+	const products = await db.query.productTable.findMany({
+		with: {
+			category: true
+		},
+		orderBy: (product, { desc }) => desc(product.createdAt),
+		where: (t, { like, or }) => or(like(t.name, `%${term}%`), like(t.description, `%${term}%`))
+	});
 
 	return {
 		products

@@ -1,44 +1,77 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
+	import type { TCategories } from '$lib/types';
+	import { queryParam, ssp } from 'sveltekit-search-params';
 
-	const sortBy = ['Recommended', 'Rating', 'Delivery Time', 'Delivery Fee', 'Minimum Order'];
-	let open = $state(false);
+	type TProps = {
+		categories: TCategories[];
+	};
+	let { categories }: TProps = $props();
+	let categoryId = queryParam('categoryId', ssp.number());
+	let selectedSubCategories = queryParam('subCategories', ssp.array(['']), {});
+	let play = queryParam('play', ssp.array(['']));
 
-	// Dummy data for categorizedFacets and facetValues
-	const categorizedFacets = [
-		{
-			facetName: 'Cuisine',
-			facetValues: [
-				{ id: 'cuisine-1', name: 'Italian' },
-				{ id: 'cuisine-2', name: 'Mexican' },
-				{ id: 'cuisine-3', name: 'Chinese' }
-			]
-		},
-		{
-			facetName: 'Dietary',
-			facetValues: [
-				{ id: 'dietary-1', name: 'Vegetarian' },
-				{ id: 'dietary-2', name: 'Vegan' },
-				{ id: 'dietary-3', name: 'Gluten-Free' }
-			]
-		}
-	];
+	function toggleSubCategory(subCategory: string) {
+		selectedSubCategories.update((currentList) => {
+			if (currentList.includes(subCategory)) {
+				// Remove the subCategory if it's already in the list
+				return currentList.filter((category) => category !== subCategory);
+			} else {
+				// Add the subCategory if it's not in the list
+				return [...currentList, subCategory];
+			}
+		});
+	}
+
+	function isSubCategorySelected(subCategory: string): boolean {
+		return $selectedSubCategories.includes(subCategory) || false;
+	}
 </script>
 
+<button
+	onclick={() => {
+		play.update((currentList) => {
+			currentList = [...currentList, 'item'];
+
+			return currentList;
+		});
+	}}
+>
+	click me
+</button>
+{#each $play as pla}
+	<div>
+		{pla}
+	</div>
+{/each}
 <div class="">
-	{#each categorizedFacets as { facetName, facetValues }}
-		<h2 class="mt-5 text-lg font-semibold capitalize">{facetName}</h2>
+	{#each categories as { name, id, subCategories }}
+		<button
+			class="mt-5 text-lg font-semibold capitalize"
+			onclick={() => {
+				$categoryId = id;
+			}}
+		>
+			{name}
+		</button>
 		<div class="mt-7 space-y-5 pl-5">
-			{#each facetValues as { id, name }}
+			{#each subCategories as subCategory}
 				<div class="flex items-center space-x-4">
-					<Checkbox id="term-{id}" aria-labelledby="terms-label" />
+					<Checkbox
+						id="term-{subCategory}"
+						checked={isSubCategorySelected(subCategory)}
+						aria-labelledby="terms-label"
+						onCheckedChange={() => toggleSubCategory(subCategory)}
+					/>
 					<Label
 						id="terms-label"
-						for="term-{id}"
+						for="term-{subCategory}"
 						class="activeMenu sideMenu cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 					>
-						{name}
+						{subCategory}
 					</Label>
 				</div>
 			{/each}

@@ -1,13 +1,12 @@
 <script lang="ts">
 	import ProductCard from '$lib/components/ProductCard.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
 	import FilterDesktop from '$lib/components/FilterDesktop.svelte';
 	import SearchBar2 from '$lib/components/SearchBar2.svelte';
 	import FilterModal from '$lib/components/modals/FilterModal.svelte';
-	import { queryParam } from 'sveltekit-search-params';
+	import { queryParam, ssp } from 'sveltekit-search-params';
+	import { Button } from '$lib/components/ui/button';
 
 	let { data } = $props();
-
 	let term = queryParam('term');
 </script>
 
@@ -24,7 +23,7 @@
 			{#if data.products.length > 0}
 				<div class="relative hidden basis-[200px] lg:inline-flex">
 					<div class="sticky left-0 top-[5rem] flex flex-col gap-5">
-						<FilterDesktop />
+						<FilterDesktop categories={data.categories} />
 					</div>
 				</div>
 				<div class="flex flex-1 flex-col gap-5">
