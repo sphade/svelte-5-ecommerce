@@ -54,19 +54,11 @@
 			icon: Blocks
 		},
 		{
-			title: 'Settings',
-			url: 'settings',
-			icon: Settings
-		},
-		{
 			title: 'Store front',
 			url: '../',
 			icon: Home
 		}
 	];
-	let sidebarOpen = $state(false);
-	let pathname = '/admin';
-	console.log($page);
 
 	let { children } = $props();
 </script>
