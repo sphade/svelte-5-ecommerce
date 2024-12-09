@@ -42,7 +42,7 @@
 			</div>
 
 			<form
-				class="fixed bottom-0 flex w-full flex-col items-center gap-2 border bg-background p-1 px-3 py-3 sm:flex-row md:static md:border-none md:p-4 md:px-1"
+				class="fixed bottom-0 flex w-full items-center gap-2 border bg-background p-1 px-3 py-3 md:static md:border-none md:p-4 md:px-1"
 				action="?/addToOrder"
 				method="POST"
 				use:enhance={() => {
@@ -73,7 +73,7 @@
 			>
 				<input bind:value={quantity} name="quantity" type="number" hidden />
 				<div
-					class="flex w-full items-center justify-center gap-4 rounded-lg border border-primary/10 bg-primary/10 p-2 sm:w-fit sm:justify-start"
+					class="flex items-center justify-center gap-4 rounded-lg border border-primary/10 bg-primary/10 p-2 sm:justify-start"
 				>
 					<Button disabled={quantity <= 1} onclick={() => quantity--} size="icon" variant="outline">
 						<Minus />
@@ -91,7 +91,7 @@
 				<Button
 					type="submit"
 					size="lg"
-					class="w-full flex-1  justify-between py-7  shadow-lg transition-all"
+					class=" flex-1  justify-between py-7  shadow-lg transition-all"
 					disabled={!data.product.stock || loading}
 				>
 					{#if loading}
