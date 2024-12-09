@@ -10,7 +10,7 @@
 	import type { ActionData } from './$types';
 	import { loginModalState } from '$lib/states/modalState.svelte';
 
-	let cartItems = $derived($page.data.user.cart.cartItems);
+	let cartItems = $derived($page.data.user.cart?.cartItems ?? []);
 </script>
 
 <div class="grid gap-4 py-4">
