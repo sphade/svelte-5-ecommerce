@@ -13,7 +13,7 @@ export const timestamps = {
 		mode: 'timestamp'
 	})
 		.notNull()
-		.default(new Date())
+		.$default(() => new Date())
 };
 export function array<T>(name: string) {
 	return text(name, { mode: 'json' }).$type<T[]>();

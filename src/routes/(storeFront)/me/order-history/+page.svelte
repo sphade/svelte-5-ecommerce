@@ -3,14 +3,11 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { ChevronsUpDown, Star } from 'lucide-svelte';
-	import { page } from '$app/stores';
 	import { cn, formatCurrency } from '$lib/utils';
-	import { Badge } from '$lib/components/ui/badge';
-	import { SHIPPING_FEE } from '$lib/constant.js';
 
 	let { data } = $props();
 	// Dummy data
-	
+
 	let orders = $derived(data.user?.orders ?? []);
 </script>
 
@@ -32,7 +29,7 @@
 					<div>
 						<p class="text-sm font-medium capitalize">Total sum</p>
 						<p class="text-xs text-muted-foreground">
-							{formatCurrency(amount + SHIPPING_FEE)}
+							{formatCurrency(amount)}
 						</p>
 					</div>
 					<div>

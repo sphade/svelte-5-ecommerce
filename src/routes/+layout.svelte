@@ -18,6 +18,6 @@
 	});
 </script>
 
-<Toaster />
+<Toaster closeButton richColors />
 
 {@render children()}

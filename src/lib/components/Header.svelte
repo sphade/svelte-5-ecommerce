@@ -28,6 +28,25 @@
 			.join('');
 	}
 	// const session = authClient.useSession();
+	let accountPages = [
+		{
+			title: 'Profile',
+			href: '/me/personal-info'
+		},
+		{
+			title: 'Order history',
+			href: '/me/order-history'
+		},
+
+		{
+			title: 'Addresses',
+			href: '/me/addresses'
+		},
+		{
+			title: 'Settings',
+			href: '/me/settings'
+		}
+	];
 </script>
 
 <header
@@ -59,29 +78,21 @@
 					<DropdownMenu.Label>My Account</DropdownMenu.Label>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Group>
-						<DropdownMenu.Item>
-							<a href="/me/personal-info">Profile</a>
-						</DropdownMenu.Item>
-						<DropdownMenu.Item>
-							<a href="/me/order-history">Order history</a>
-						</DropdownMenu.Item>
-						<DropdownMenu.Item>
-							<a href="/me/redeem-code">Redeem code</a>
-						</DropdownMenu.Item>
-						<DropdownMenu.Item>
-							<a href="/me/addresses">Addresses</a>
-						</DropdownMenu.Item>
-						<DropdownMenu.Item>
-							<a href="/me/settings">Settings</a>
-						</DropdownMenu.Item>
+						{#each accountPages as { title, href }}
+							<DropdownMenu.Item>
+								{#snippet child({ props })}
+									<a {href} {...props}>{title}</a>
+								{/snippet}
+							</DropdownMenu.Item>
+						{/each}
 						{#if $page.data.user.role === 'admin'}
 							<DropdownMenu.Item>
-								<a href="/admin">Admin dashboard</a>
+								{#snippet child({ props })}
+									<a href="/admin" {...props}>Admin dashboard</a>
+								{/snippet}
 							</DropdownMenu.Item>
 						{/if}
 					</DropdownMenu.Group>
-					<DropdownMenu.Separator />
-
 					<DropdownMenu.Separator />
 
 					<DropdownMenu.Item

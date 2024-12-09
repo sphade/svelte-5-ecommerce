@@ -1,80 +1,11 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
 	import { Bike, ChevronRight, CreditCard, Loader2, Minus, Plus } from 'lucide-svelte';
-	import { Label } from '$lib/components/ui/label';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import GuestContact from './components/GuestContact.svelte';
-	import GuestShippingInformation from './components/GuestShippingInformation.svelte';
 	import { formatCurrency } from '$lib/utils';
 	import OrderList from '$lib/components/OrderList.svelte';
-	import { toast } from 'svelte-sonner';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { SHIPPING_FEE } from '$lib/constant';
 
-	let shippingMethodId = 1;
-
-	const data = $state({
-		user: {
-			activeCustomer: {
-				defaultAddress: {
-					fullName: 'John Doe',
-					address1: '123 Main Street',
-					address2: 'Apt 4B',
-					city: 'New York',
-					state: 'NY',
-					postalCode: '10001'
-				}
-			}
-		},
-		activeOrder: {
-			lines: [
-				{
-					id: 1,
-					name: 'Classic Kebab',
-					price: 10.99,
-					quantity: 1
-				},
-				{
-					id: 2,
-					name: 'Chicken Wings',
-					price: 7.99,
-					quantity: 2
-				}
-			],
-			subTotalWithTax: 26.97,
-			currencyCode: 'USD',
-			shippingAddress: {
-				fullName: 'John Doe',
-				address1: '123 Main Street',
-				address2: 'Apt 4B',
-				city: 'New York',
-				state: 'NY',
-				postalCode: '10001'
-			}
-		},
-		shippingMethods: [
-			{
-				id: 1,
-				name: 'Standard Shipping',
-				price: 5.99
-			},
-			{
-				id: 2,
-				name: 'Express Shipping',
-				price: 12.99
-			}
-		]
-	});
-
-	const activeOrder = data?.activeOrder;
-
-	// let defaultAddress = $derived(
-	// 	$page.data.user.addresses.find((a) => {
-	// 		return a.isDefaultShipping === true;
-	// 	})
-	// );
 	const defaultAddress = $page.data.user.addresses.find((a) => {
 		return a.isDefaultShipping === true;
 	});
@@ -96,9 +27,8 @@
 			<div
 				class="  z-10 my-0 flex w-full max-w-md flex-col justify-center gap-7 border border-white/20 bg-white/20 px-4 py-3 text-white shadow-md drop-shadow-md backdrop-blur sm:rounded-r-md md:max-w-3xl md:gap-10 md:px-10"
 			>
-				<div class="flex flex-col gap-1 drop-shadow-md md:gap-2">
+				<div class="drop-shadow-md">
 					<h2 class="font-display text-3xl font-bold md:text-6xl">Checkout</h2>
-					<h4 class="text-xl font-semibold md:text-2xl">Kebab Royal</h4>
 				</div>
 			</div>
 		</div>
@@ -136,20 +66,6 @@
 					</a>
 				</ul>
 			</div>
-			<RadioGroup.Root value={''} class="gap-5 md:gap-10">
-				{#each data.shippingMethods ?? [] as shippingMethod}
-					<div class="flex items-center space-x-2">
-						<RadioGroup.Item value="" />
-						<Label>
-							{shippingMethod.name}
-							<span class="text-muted-foreground">
-								{formatCurrency(Number(shippingMethod.price))}</span
-							>
-						</Label>
-					</div>
-				{/each}
-				<!-- <RadioGroup.Input name="spacing" /> -->
-			</RadioGroup.Root>
 
 			<div class="flex h-[auto] w-full flex-col gap-4 py-4 lg:max-w-[600px]">
 				<h4 class="font-display text-lg font-semibold tracking-wide md:text-2xl lg:text-3xl">
@@ -173,9 +89,7 @@
 					</div>
 					<ul class="flex flex-col gap-3 border-b pb-5 pt-2">
 						<li class="flex items-center justify-between">
-							<p class="text-sm font-medium lg:text-base">
-								Item subtotal ({cartItems.length || 0} item)
-							</p>
+							<p class="text-sm font-medium lg:text-base">Items subtotal</p>
 							<span
 								class="rounded-md bg-primary/20 px-2 py-1 text-sm font-medium text-primary lg:text-base"
 							>
@@ -183,16 +97,11 @@
 							</span>
 						</li>
 						<li class="flex items-center justify-between">
-							<p class="text-sm font-medium lg:text-base">
-								Delivery ({data.shippingMethods.find((m) => m.id === shippingMethodId)?.name})
-							</p>
+							<p class="text-sm font-medium lg:text-base">Delivery (Standard shipping)</p>
 							<span
 								class="rounded-md bg-primary/20 px-2 py-1 text-sm font-medium text-primary lg:text-base"
 							>
-								{formatCurrency(
-									Number(data.shippingMethods.find((m) => m.id === shippingMethodId)?.price),
-									activeOrder?.currencyCode
-								)}
+								{formatCurrency(SHIPPING_FEE)}
 							</span>
 						</li>
 					</ul>
@@ -201,7 +110,7 @@
 						<span
 							class="rounded-md bg-primary/20 px-2 py-1 text-sm font-medium text-primary lg:text-base"
 						>
-							{formatCurrency(totalPrice + 5)}
+							{formatCurrency(totalPrice + SHIPPING_FEE)}
 						</span>
 					</div>
 					<Button class="w-full" disabled={!!defaultAddress} href="/checkout/payment"

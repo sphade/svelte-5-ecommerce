@@ -12,7 +12,7 @@
 	let { data, form } = $props();
 	let quantity = $state(1);
 	let price = $derived(data.product.price * quantity);
-
+	let loading = $state(false);
 	// Dummy data for product and variants
 </script>
 
@@ -20,12 +20,10 @@
 	<h1 class=" mt-3 text-2xl font-semibold capitalize md:mt-5 md:text-4xl">{data.product?.name}</h1>
 
 	<div class="mt-5 flex flex-col gap-5 md:mt-10 md:flex-row">
-		<Carousel.Root class="w-[600px]">
-			<Carousel.Content class="border  border-red-500">
+		<Carousel.Root class="w-full max-w-[600px] ">
+			<Carousel.Content>
 				{#each data.product.images as image}
-					<Carousel.Item
-						class="h-[300px]  w-full rounded-md border-4 border-red-700 p-1 md:h-[400px]"
-					>
+					<Carousel.Item class="p-  h-[300px] w-full rounded-md md:h-[400px]">
 						<img
 							class="h-full w-full rounded-md object-cover"
 							src={image.fileUrl}
@@ -49,11 +47,13 @@
 				method="POST"
 				use:enhance={() => {
 					return async ({ update, result }) => {
+						loading = true;
 						await update();
+						quantity = 1;
+						loading = false;
 						// Check if there's a message in the result
 						if (result.type === 'success') {
 							const data = result.data as ActionData;
-							quantity = 1;
 							toast.success(data?.message!);
 						} else if (result.type === 'failure') {
 							const data = result.data as ActionData;
@@ -90,9 +90,9 @@
 					type="submit"
 					size="lg"
 					class="flex-1  justify-between py-7 shadow-lg transition-all"
-					disabled={!data.product.stock}
+					disabled={!data.product.stock || loading}
 				>
-					{#if false}
+					{#if loading}
 						<Loader class="size-5 animate-spin" />
 					{:else}
 						<span class="font-bold capitalize">add to order</span>
@@ -100,7 +100,6 @@
 					{formatCurrency(price)}
 				</Button>
 			</form>
-
 			<div class="flex items-center gap-4 text-sm">
 				<p class="text-lg text-muted-foreground">
 					{data.product.sku}

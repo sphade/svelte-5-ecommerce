@@ -80,7 +80,7 @@
 		<div class="space-y-5 py-5">
 			<div class="flex items-center justify-between">
 				<p>Subtotal</p>
-				<p>{formatCurrency(subTotal)}</p>
+				<p>{formatCurrency(subTotal - SHIPPING_FEE)}</p>
 			</div>
 			<div class="flex items-center justify-between">
 				<p>Shipping</p>
@@ -89,7 +89,7 @@
 		</div>
 		<div class="flex items-center justify-between">
 			<p class="py-5 font-semibold">Total</p>
-			<p>{formatCurrency(subTotal + SHIPPING_FEE)}</p>
+			<p>{formatCurrency(subTotal)}</p>
 		</div>
 	</div>
 </div>

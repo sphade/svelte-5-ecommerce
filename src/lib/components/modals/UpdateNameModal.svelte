@@ -55,7 +55,7 @@
 			<Dialog.Title class="font-display text-lg sm:text-xl md:text-3xl  ">Name</Dialog.Title>
 		</Dialog.Header>
 
-		<form class="mt-5 flex flex-col gap-5" use:enhance>
+		<form class="mt-5 flex flex-col gap-5" method="post" use:enhance>
 			<Form.Field {form} name="name">
 				<Form.Control>
 					{#snippet children({ props })}

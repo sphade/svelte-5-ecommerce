@@ -4,6 +4,7 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
 	import type { TCategories } from '$lib/types';
+	import { cn } from '$lib/utils';
 	import { queryParam, ssp } from 'sveltekit-search-params';
 
 	type TProps = {
@@ -11,8 +12,9 @@
 	};
 	let { categories }: TProps = $props();
 	let categoryId = queryParam('categoryId', ssp.number());
-	let selectedSubCategories = queryParam('subCategories', ssp.array(['']), {});
-	let play = queryParam('play', ssp.array(['']));
+	let selectedSubCategories = queryParam('subCategories', ssp.array(['']), {
+		showDefaults: false
+	});
 
 	function toggleSubCategory(subCategory: string) {
 		selectedSubCategories.update((currentList) => {
@@ -31,26 +33,12 @@
 	}
 </script>
 
-<button
-	onclick={() => {
-		play.update((currentList) => {
-			currentList = [...currentList, 'item'];
-
-			return currentList;
-		});
-	}}
->
-	click me
-</button>
-{#each $play as pla}
-	<div>
-		{pla}
-	</div>
-{/each}
-<div class="">
+<div class="lawal">
 	{#each categories as { name, id, subCategories }}
 		<button
-			class="mt-5 text-lg font-semibold capitalize"
+			class={cn(' mt-5 text-lg font-semibold capitalize', {
+				'activeMenu sideMenu-active': $categoryId === id
+			})}
 			onclick={() => {
 				$categoryId = id;
 			}}
@@ -69,7 +57,7 @@
 					<Label
 						id="terms-label"
 						for="term-{subCategory}"
-						class="activeMenu sideMenu cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+						class="  cursor-pointer text-sm font-medium"
 					>
 						{subCategory}
 					</Label>

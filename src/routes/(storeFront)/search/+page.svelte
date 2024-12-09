@@ -2,9 +2,7 @@
 	import ProductCard from '$lib/components/ProductCard.svelte';
 	import FilterDesktop from '$lib/components/FilterDesktop.svelte';
 	import SearchBar2 from '$lib/components/SearchBar2.svelte';
-	import FilterModal from '$lib/components/modals/FilterModal.svelte';
 	import { queryParam, ssp } from 'sveltekit-search-params';
-	import { Button } from '$lib/components/ui/button';
 
 	let { data } = $props();
 	let term = queryParam('term');
@@ -16,7 +14,6 @@
 	{/if}
 	<div class="my-5 flex items-center justify-between">
 		<SearchBar2 />
-		<FilterModal />
 	</div>
 	<section class="  flex w-full flex-col justify-between gap-6 lg:flex-row">
 		{#if data}

@@ -27,7 +27,8 @@ export const load = async ({ request, locals }) => {
 							product: true
 						}
 					}
-				}
+				},
+				orderBy: (t, { desc }) => desc(t.createdAt)
 			}
 		}
 	});
