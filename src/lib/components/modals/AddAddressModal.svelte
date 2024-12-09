@@ -27,7 +27,6 @@
 </script>
 
 <Dialog.Root bind:open={addressModalState.value}>
-	<Dialog.Trigger class={buttonVariants()}>Add a new address</Dialog.Trigger>
 	<Dialog.Content class="w-full p-5 sm:p-10 ">
 		<Dialog.Header>
 			<Dialog.Title class="font-display font-medium md:text-xl">Add Address</Dialog.Title>

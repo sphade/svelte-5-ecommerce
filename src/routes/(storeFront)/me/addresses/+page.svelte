@@ -1,36 +1,34 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import AddAddressModal from '$lib/components/modals/AddAddressModal.svelte';
-	import EditAddressModal from '$lib/components/modals/EditAddressModal.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Pen, Trash } from 'lucide-svelte';
-	import { goto, invalidateAll, preloadData, pushState } from '$app/navigation';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import type { ActionData } from './$types';
+	import { addressModalState } from '$lib/states/modalState.svelte';
 
 	let addresses = $derived($page.data.user.addresses);
 	let deleteModalState = $state(false);
 	let addressId = $state(0);
 </script>
 
-<!-- {#if $page.state.form}
-	<EditAddressModal />
-{/if} -->
+<AddAddressModal />
 
 {#if addresses.length === 0}
 	<div class="flex h-[50vh] flex-col items-center justify-center text-center">
 		<h1 class="font-display text-3xl font-semibold">You haven't saved any addresses yet</h1>
 		<p class="mb-5 text-sm text-muted-foreground">Add a new address easily below</p>
-		<AddAddressModal />
+		<Button onclick={() => addressModalState.setTrue()}>Add new address</Button>
 	</div>
 {:else}
 	<div>
 		<div class="mb-2 ml-auto w-fit px-3">
 			<AddAddressModal />
+			<Button onclick={() => addressModalState.setTrue()}>Add new address</Button>
 		</div>
 
 		<div class="mb-3 grid gap-5 lg:grid-cols-2">
@@ -55,11 +53,9 @@
 						</div>
 					</Card.Content>
 					<Card.Footer class=" -pb-2 gap-5 pt-1 text-sm">
-						
 						<Button
 							onclick={() => {
 								addressId = address.id;
-								console.log('🚀 ~ addressId:', addressId);
 								deleteModalState = true;
 							}}
 							variant="destructive"
