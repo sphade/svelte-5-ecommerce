@@ -24,11 +24,12 @@
 						<div class="absolute inset-0 bg-gradient-to-br from-black/20 to-black/80"></div>
 						<div class="absolute bottom-0 right-0 z-10 mb-14 px-5 md:mb-20 md:px-10">
 							<h1 class="mb-1 text-2xl font-bold text-white md:mb-3 md:text-6xl">
-								Restaurants and more delivered to your door
+								Goods and more delivered to your door
 							</h1>
 							<p class=" mb-2 text-sm md:mb-5 md:text-lg">
-								Discover local, on-demand delivery or pickup from restaurants, nearby grocery and
-								convenience stores, and more
+								Discover, explore, and enjoy on-demand delivery from this store and more. Shop now
+								and get access to a wide range of products, including electronics, fashion, home
+								goods, and much more.
 							</p>
 						</div>
 					</div>
@@ -41,8 +42,9 @@
 	<section class="mt-20">
 		<h2 class="text-2xl font-bold md:text-4xl">What We offer</h2>
 		<p class="mt-2 text-sm text-muted-foreground md:mt-3 md:text-base">
-			Discover local, on-demand delivery or Pickup from restaurants, nearby grocery and convenience
-			stores, and more.
+			With our fast and reliable delivery service, you can have your favorite items delivered right
+			to your doorstep. Start shopping today and experience the convenience of online shopping with
+			us.
 		</p>
 		<Button href="/search" class="my-4 md:my-7">Explore products now</Button>
 	</section>

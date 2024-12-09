@@ -10,6 +10,6 @@
 		<h1 class="font-display text-2xl font-bold capitalize text-primary">confirm successfully</h1>
 		<p>Your email has been confirmed successfully, you can now login to your account</p>
 
-		<Button class="shadow-md">Login To african market online</Button>
+		<Button class="shadow-md">Login</Button>
 	</div>
 </main>
