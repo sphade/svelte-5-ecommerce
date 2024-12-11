@@ -18,7 +18,7 @@ export const load = async ({ locals: { db }, url, platform }) => {
     const validSubCategories = subCategories.filter((subCategory) => subCategory.trim() !== '');
 
     // Generate a unique cache key based on the search parameters
-    const cacheKey = `products:${term}:${categoryId}:${validSubCategories.join(',')}`;
+    const cacheKey = `lawal`;
 
     // Try to get the cached data
     const cachedData = await kv.get(cacheKey);
