@@ -18,3 +18,7 @@ database_id = "7839da2e-8ef5-46c1-94e6-fb111d636688"
 [[r2_buckets]]
 binding = 'BUCKET' # <~ valid JavaScript variable name
 bucket_name = 'ecommerce-bucket'
+
+[[kv_namespaces]]
+binding = "kv"
+id = "b94e953b8dca40fcbda63729dab66d54"

@@ -9,6 +9,7 @@ declare global {
 			env: {
 				DB: D1Database;
 				BUCKET: R2Bucket;
+				kv: KVNamespace;
 			};
 			cf: CfProperties;
 			ctx: ExecutionContext;
